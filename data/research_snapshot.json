@@ -10,14 +10,71 @@
   },
   "portfolioDefaults": {
     "capital": 100000,
-    "equityCap": 55,
-    "optionsCap": 40,
+    "equityCap": 20,
+    "optionsCap": 75,
     "cashMin": 5,
-    "maxSingleEquity": 12,
-    "maxSingleOption": 7,
+    "maxSingleEquity": 10,
+    "maxSingleOption": 12,
+    "riskProfile": "moonshot",
+    "targetReturn": "100x-1000x",
+    "maxTotalLoss": 100,
     "allowNakedOptions": false,
     "allowMargin": false
   },
+  "riskProfiles": [
+    {
+      "id": "moonshot",
+      "label": "Moonshot / Matt",
+      "target": "100x-1000x sleeve",
+      "summary": "Designed for capital that can go to zero. Pushes toward convex options, event-driven mispricing, and smaller bottleneck names with non-linear upside.",
+      "defaultEquity": 20,
+      "defaultOptions": 75,
+      "defaultCash": 5,
+      "maxTotalLoss": 100,
+      "maxSingleEquity": 10,
+      "maxSingleOption": 12,
+      "scoreTilt": {"expected": 0.8, "convexity": 1.65, "liquidity": 0.65, "valuationPenalty": 0.65, "bearPenalty": 0.25}
+    },
+    {
+      "id": "asymmetric",
+      "label": "Aggressive asymmetric",
+      "target": "10x-50x with upside tails",
+      "summary": "Still high risk, but balances LEAPS and common stock so a bad options cycle does not wipe out the entire portfolio.",
+      "defaultEquity": 45,
+      "defaultOptions": 45,
+      "defaultCash": 10,
+      "maxTotalLoss": 70,
+      "maxSingleEquity": 12,
+      "maxSingleOption": 8,
+      "scoreTilt": {"expected": 1.0, "convexity": 1.2, "liquidity": 0.85, "valuationPenalty": 0.85, "bearPenalty": 0.65}
+    },
+    {
+      "id": "highRisk",
+      "label": "High-risk survivable",
+      "target": "3x-10x core plus option kickers",
+      "summary": "For friends who want AI upside but do not want a single options sleeve to define the outcome.",
+      "defaultEquity": 65,
+      "defaultOptions": 20,
+      "defaultCash": 15,
+      "maxTotalLoss": 45,
+      "maxSingleEquity": 12,
+      "maxSingleOption": 5,
+      "scoreTilt": {"expected": 1.15, "convexity": 0.8, "liquidity": 1.05, "valuationPenalty": 1.05, "bearPenalty": 1.05}
+    },
+    {
+      "id": "survival",
+      "label": "Do-not-zero",
+      "target": "Participate without wipeout",
+      "summary": "For investors who want exposure to the AI boom but should avoid structures where the whole position can expire worthless.",
+      "defaultEquity": 80,
+      "defaultOptions": 5,
+      "defaultCash": 15,
+      "maxTotalLoss": 25,
+      "maxSingleEquity": 14,
+      "maxSingleOption": 2,
+      "scoreTilt": {"expected": 1.25, "convexity": 0.45, "liquidity": 1.25, "valuationPenalty": 1.35, "bearPenalty": 1.45}
+    }
+  ],
   "scenarioFactors": [
     {
       "id": "capex",
@@ -290,6 +347,76 @@
       "url": "",
       "quality": 1,
       "notes": "Import lane exists, but the prototype does not assume access to private communities."
+    },
+    {
+      "id": "spglobal-hyperscaler-capex",
+      "kind": "market_research",
+      "title": "Hyperscaler earnings quarterly: What price inference?",
+      "publisher": "S&P Global Market Intelligence",
+      "date": "2026-03",
+      "url": "https://www.spglobal.com/market-intelligence/en/news-insights/research/2026/03/hyperscaler-earnings-quarterly-what-price-inference",
+      "quality": 4,
+      "notes": "Supports the capex-persistence debate and the need to connect AI spending with monetization."
+    },
+    {
+      "id": "tomshardware-capex-memory",
+      "kind": "market_research",
+      "title": "Skyrocketing component prices push Big Tech capex to record $725 billion",
+      "publisher": "Tom's Hardware",
+      "date": "2026-05-01",
+      "url": "https://www.tomshardware.com/tech-industry/big-tech/microsoft-attributed-25-billion-of-its-record-ai-budget-to-memory-chip-costs",
+      "quality": 3,
+      "notes": "Current market-color source for hyperscaler capex, memory cost pressure, and power/grid bottleneck framing."
+    },
+    {
+      "id": "datacenterknowledge-capex",
+      "kind": "market_research",
+      "title": "Hyperscaler Earnings Show AI Demand Outrunning Infrastructure",
+      "publisher": "Data Center Knowledge",
+      "date": "2026-05-01",
+      "url": "https://www.datacenterknowledge.com/next-gen-data-centers/hyperscaler-earnings-show-ai-demand-outrunning-infrastructure",
+      "quality": 3,
+      "notes": "Recent data-center industry read on AI capex, cloud growth, and infrastructure demand."
+    },
+    {
+      "id": "axios-trump-chip-policy",
+      "kind": "policy_news",
+      "title": "Draft AI chip regulations clash with the White House",
+      "publisher": "Axios",
+      "date": "2026-03-05",
+      "url": "https://www.axios.com/2026/03/05/trump-ai-chip-clash-white-house",
+      "quality": 3,
+      "notes": "Policy-tape risk input: AI chip exports can move on White House rhetoric and negotiating posture."
+    },
+    {
+      "id": "axios-chip-tariff",
+      "kind": "policy_news",
+      "title": "Trump sets 25% tariff as part of Nvidia chip deal",
+      "publisher": "Axios",
+      "date": "2026-01-14",
+      "url": "https://www.axios.com/2026/01/14/trump-tariff-nvidia-chips-china",
+      "quality": 3,
+      "notes": "Evidence that chip/tariff policy can be an immediate trade catalyst rather than only a long-cycle factor."
+    },
+    {
+      "id": "tomshardware-nvidia-china",
+      "kind": "market_news",
+      "title": "Jensen says Nvidia now has zero percent market share in China",
+      "publisher": "Tom's Hardware",
+      "date": "2026-05-03",
+      "url": "https://www.tomshardware.com/tech-industry/artificial-intelligence/jensen-says-nvidia-now-has-zero-percent-market-share-in-china-says-us-export-policy-has-already-largely-backfired",
+      "quality": 3,
+      "notes": "Late-breaking export-control and China-share signal; useful for NVDA, ASIC, and geopolitics sliders."
+    },
+    {
+      "id": "truth-social-watch",
+      "kind": "manual_event_watch",
+      "title": "Trump Truth Social tape monitor",
+      "publisher": "Truth Social",
+      "date": "live/manual",
+      "url": "https://truthsocial.com/@realDonaldTrump",
+      "quality": 1,
+      "notes": "Manual check lane for tariff, Taiwan, China, AI chip, and data-center remarks. Do not treat posts as policy until corroborated by official action or credible reporting."
     }
   ],
   "claims": [
@@ -1009,6 +1136,86 @@
     {"window": "2026-2027", "event": "Ethernet vs optics/CPO architecture evidence", "impacted": ["CRDO", "ALAB", "ANET", "MRVL", "COHR", "CLS"], "trigger": "Move Ethernet/copper slider up for AEC wins, down for rapid CPO/optics substitution."},
     {"window": "2026-2028", "event": "Grid interconnection, power contracts, nuclear/SMR offtakes", "impacted": ["VRT", "MOD", "ETN", "PWR", "CEG", "VST", "CCJ"], "trigger": "Increase grid bottleneck slider when power access delays AI data-center projects."},
     {"window": "Anytime", "event": "Taiwan, China export-control, tariff, or Middle East shock", "impacted": ["TSM", "ASML", "CAMT", "FORM", "ONTO", "NVDA", "AVGO"], "trigger": "Raise geopolitical/export sliders and shift optimizer toward U.S. power/grid and cash."}
+  ],
+  "eventRadar": [
+    {
+      "id": "capex-memory-squeeze",
+      "urgency": "high",
+      "timeframe": "0-90 days",
+      "headline": "Memory cost and AI capex pressure are the cleanest near-term HBM/test catalyst",
+      "whyItMatters": "Recent capex commentary suggests AI infrastructure spending remains huge, while memory cost pressure is a direct transmission mechanism into HBM, test, metrology, and inspection suppliers.",
+      "tilt": "Raise HBM shortage and capex sliders; favor RMBS, FORM, ONTO, CAMT, BESIY. For moonshot mode, look for call-spread structures after volatility pullbacks rather than buying every spike.",
+      "beneficiaries": ["RMBS", "FORM", "ONTO", "CAMT", "BESIY"],
+      "atRisk": ["NVDA", "ALAB", "CRDO"],
+      "sources": ["tomshardware-capex-memory", "spglobal-hyperscaler-capex", "form-q1-2026", "onto-q1-2026"]
+    },
+    {
+      "id": "grid-power-gating",
+      "urgency": "medium",
+      "timeframe": "0-12 months",
+      "headline": "Grid and power scarcity can both delay AI projects and create separate winners",
+      "whyItMatters": "Data-center growth is increasingly constrained by power availability. This can hurt near-term compute deployment while increasing the value of electrical, cooling, grid, and power generation exposures.",
+      "tilt": "Raise grid bottleneck slider; favor VRT, MOD, ETN, PWR, CEG, VST. Hedge semis if power-access headlines imply project slips rather than just more infrastructure spend.",
+      "beneficiaries": ["VRT", "MOD", "ETN", "PWR", "CEG", "VST"],
+      "atRisk": ["NVDA", "CRDO", "ALAB", "TSM"],
+      "sources": ["iea-dc-2025", "eia-power-demand", "datacenterknowledge-capex"]
+    },
+    {
+      "id": "export-control-tape",
+      "urgency": "high",
+      "timeframe": "intraday-30 days",
+      "headline": "AI chip export-control and tariff rhetoric is now a short-duration options catalyst",
+      "whyItMatters": "White House policy posture, tariff remarks, and AI chip export actions can immediately reprice NVDA, TSM, AVGO, MRVL, ASML, and China-sensitive parts of the stack.",
+      "tilt": "Use event-driven options only with defined premium at risk. Raise export and geopolitical sliders on adverse tape; lower direct China/GPU exposure and consider ASIC, U.S. power/grid, or cash rotation.",
+      "beneficiaries": ["AVGO", "MRVL", "ETN", "PWR", "CEG"],
+      "atRisk": ["NVDA", "TSM", "ASML", "CAMT", "FORM"],
+      "sources": ["axios-trump-chip-policy", "axios-chip-tariff", "tomshardware-nvidia-china", "truth-social-watch"]
+    },
+    {
+      "id": "ethernet-optics-architecture",
+      "urgency": "medium",
+      "timeframe": "earnings-to-6 months",
+      "headline": "Ethernet/copper vs optics/CPO is the key fork for CRDO, ALAB, ANET, MRVL, COHR, and CLS",
+      "whyItMatters": "A single architecture assumption can flip the trade stack. Copper/AEC strength favors CRDO and ANET; faster optics/CPO adoption shifts upside toward MRVL, COHR, and CLS.",
+      "tilt": "Use the Ethernet/copper slider as a topology dial. In moonshot mode, pair long CRDO/ALAB convexity with smaller optics/CPO hedges instead of making one topology an all-or-nothing bet.",
+      "beneficiaries": ["CRDO", "ALAB", "ANET", "MRVL", "COHR", "CLS"],
+      "atRisk": ["CRDO", "ALAB"],
+      "sources": ["crdo-q3-2026", "alab-q1-2026", "cls-q1-2026"]
+    }
+  ],
+  "tradeArchetypes": [
+    {
+      "id": "1000x-tail",
+      "label": "100x-1000x tail",
+      "useWhen": "Only for premium you can lose completely and only when a catalyst can re-rate the company or option delta quickly.",
+      "structure": "Small OTM call ladders or call spreads across 3-5 bottleneck names; roll after catalyst validation rather than averaging down blindly.",
+      "bestFit": ["RMBS", "CAMT", "CRDO", "ALAB", "COHR", "MRVL"],
+      "failureMode": "Most contracts expire worthless; sizing discipline is the edge."
+    },
+    {
+      "id": "10x-50x-asymmetric",
+      "label": "10x-50x asymmetric",
+      "useWhen": "For investors willing to take major drawdown but who need multiple ways to survive a timing miss.",
+      "structure": "Common stock core plus LEAPS/call spreads on the same thesis, with cash reserved for post-earnings volatility dislocations.",
+      "bestFit": ["RMBS", "FORM", "ONTO", "CAMT", "CRDO", "MOD", "VRT"],
+      "failureMode": "Correct thesis, wrong timing; use longer duration and avoid all premium expiring before 2027 catalysts."
+    },
+    {
+      "id": "event-driven-tape",
+      "label": "Short-duration event tape",
+      "useWhen": "For Trump/Truth Social, tariff, export-control, Taiwan, earnings, or hyperscaler capex headlines where the market reaction matters more than the long-cycle thesis.",
+      "structure": "Defined-risk weekly/monthly options, vertical spreads, or small hedges sized as a separate event sleeve.",
+      "bestFit": ["NVDA", "TSM", "AVGO", "ASML", "CRDO", "VRT"],
+      "failureMode": "Headline is real but market fades it; never size event trades like long-cycle conviction."
+    },
+    {
+      "id": "survivable-core",
+      "label": "Survivable AI core",
+      "useWhen": "For friends who want AI boom exposure but do not want to lose all invested capital.",
+      "structure": "Mostly common stock in higher-liquidity bottleneck names, small LEAPS sleeve, explicit cash reserve.",
+      "bestFit": ["VRT", "ETN", "PWR", "TSM", "AVGO", "ASML", "RMBS"],
+      "failureMode": "Lower maximum upside; avoids the very payoff distribution Matt is willing to underwrite."
+    }
   ],
   "rebalanceRules": [
     "Refresh prices, option chains, and primary-source updates before any real trade.",

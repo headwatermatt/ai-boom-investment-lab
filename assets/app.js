@@ -10,7 +10,7 @@ const state = {
   collabNotes: []
 };
 
-const tabs = ["Landscape", "Optimizer", "Options Ladder", "Idea Board", "Sentiment", "Risk Map", "Source Ledger"];
+const tabs = ["Landscape", "Optimizer", "Options Ladder", "Event Radar", "Idea Board", "Sentiment", "Risk Map", "Source Ledger"];
 const colors = ["#196d68", "#c9821c", "#3c5f82", "#2b7a4b", "#7f5f9a", "#9b5a3f", "#6b7f52", "#b44b43", "#4e777a", "#9a8a3f"];
 const factorLabels = {
   capex: "Capex",
@@ -64,9 +64,11 @@ function loadScenarioFromHash() {
       });
     }
     if (parsed.portfolio) {
-      ["capital", "equityCap", "optionsCap", "cashMin"].forEach((key) => {
+      ["capital", "equityCap", "optionsCap", "cashMin", "maxTotalLoss", "maxSingleEquity", "maxSingleOption"].forEach((key) => {
         if (Number.isFinite(Number(parsed.portfolio[key]))) state.portfolio[key] = Number(parsed.portfolio[key]);
       });
+      if (parsed.portfolio.riskProfile) state.portfolio.riskProfile = String(parsed.portfolio.riskProfile);
+      if (parsed.portfolio.targetReturn) state.portfolio.targetReturn = String(parsed.portfolio.targetReturn);
     }
     if (parsed.selectedSymbol) state.selectedSymbol = parsed.selectedSymbol;
     if (Array.isArray(parsed.collabNotes)) {
@@ -109,6 +111,8 @@ function scenarioProbabilities() {
 }
 
 function scoreInstrument(item, probabilities) {
+  const profile = getRiskProfile();
+  const tilt = profile.scoreTilt || { expected: 1, convexity: 1, liquidity: 1, valuationPenalty: 1, bearPenalty: 1 };
   const factorImpact = Object.entries(item.impact).reduce((sum, [key, impact]) => {
     const centered = (state.factors[key] - 50) / 50;
     return sum + centered * impact * 7.5;
@@ -119,7 +123,14 @@ function scoreInstrument(item, probabilities) {
   const adjustedBull = clamp(item.moic.bull * (1 + factorImpact / 155), 0, 12);
   const expectedMoic = adjustedBear * probabilities.bear + adjustedBase * probabilities.base + adjustedBull * probabilities.bull;
   const downside = Math.max(0, 1 - adjustedBear);
-  const rankScore = expectedMoic * 36 + item.conviction * 0.38 + item.convexity * 0.28 + item.liquidity * 0.12 - riskPenalty - downside * 18;
+  const rankScore =
+    expectedMoic * 36 * tilt.expected +
+    item.conviction * 0.38 +
+    item.convexity * 0.28 * tilt.convexity +
+    item.liquidity * 0.12 * tilt.liquidity +
+    targetReturnBoost(item, adjustedBear, adjustedBase, adjustedBull) -
+    riskPenalty * tilt.valuationPenalty -
+    downside * 18 * tilt.bearPenalty;
   const stressScore = clamp(100 - item.valuationRisk * 0.35 - Math.max(0, -factorImpact) * 0.9 - downside * 40, 0, 100);
   return {
     ...item,
@@ -132,8 +143,9 @@ function scoreInstrument(item, probabilities) {
 }
 
 function buildAllocations(ranked) {
-  const totalCap = clamp(Number(state.portfolio.equityCap) + Number(state.portfolio.optionsCap) + Number(state.portfolio.cashMin), 1, 100);
-  const optionsCap = totalCap > 100 ? state.portfolio.optionsCap * (100 / totalCap) : state.portfolio.optionsCap;
+  const totalCap = Math.max(1, Number(state.portfolio.equityCap) + Number(state.portfolio.optionsCap) + Number(state.portfolio.cashMin));
+  const rawOptionsCap = totalCap > 100 ? state.portfolio.optionsCap * (100 / totalCap) : state.portfolio.optionsCap;
+  const optionsCap = Math.min(rawOptionsCap, Number(state.portfolio.maxTotalLoss) || 100);
   const equityCap = totalCap > 100 ? state.portfolio.equityCap * (100 / totalCap) : state.portfolio.equityCap;
   const cashMin = totalCap > 100 ? state.portfolio.cashMin * (100 / totalCap) : state.portfolio.cashMin;
 
@@ -291,6 +303,8 @@ function render() {
 }
 
 function renderControls() {
+  const profiles = state.data.riskProfiles || [];
+  const profile = getRiskProfile();
   return `
     <aside class="panel control-rail">
       <div class="panel-header">
@@ -299,10 +313,14 @@ function renderControls() {
       </div>
       <div class="control-body">
         <div class="status-strip">
-          <div class="status-pill"><span>Mode</span><strong>Speculative options</strong></div>
-          <div class="status-pill"><span>Hard rule</span><strong>Options sleeve can go to zero</strong></div>
+          <div class="status-pill"><span>Profile</span><strong>${escapeHtml(profile.label)}</strong></div>
+          <div class="status-pill"><span>Target</span><strong>${escapeHtml(state.portfolio.targetReturn || profile.target)}</strong></div>
         </div>
+        <p class="control-summary">${escapeHtml(profile.summary || "")}</p>
         <div class="input-grid">
+          <label class="input-field"><span>Risk profile</span><select id="riskProfileInput">${profiles.map((profile) => `<option value="${profile.id}" ${profile.id === state.portfolio.riskProfile ? "selected" : ""}>${escapeHtml(profile.label)}</option>`).join("")}</select></label>
+          <label class="input-field"><span>Target payoff</span><select id="targetReturnInput">${["100x-1000x", "10x-50x", "3x-10x", "Do-not-zero"].map((target) => `<option value="${target}" ${target === state.portfolio.targetReturn ? "selected" : ""}>${target}</option>`).join("")}</select></label>
+          <label class="input-field"><span>Max premium loss %</span><input id="maxLossInput" type="number" min="0" max="100" step="5" value="${state.portfolio.maxTotalLoss}"></label>
           <label class="input-field"><span>Capital</span><input id="capitalInput" type="number" min="1000" step="1000" value="${state.portfolio.capital}"></label>
           <label class="input-field"><span>Equity %</span><input id="equityInput" type="number" min="0" max="100" step="1" value="${state.portfolio.equityCap}"></label>
           <label class="input-field"><span>Options %</span><input id="optionsInput" type="number" min="0" max="100" step="1" value="${state.portfolio.optionsCap}"></label>
@@ -323,12 +341,14 @@ function renderControls() {
 
 function renderMetrics() {
   const result = state.results;
+  const profile = getRiskProfile();
+  const maxLossBudget = Number(state.portfolio.maxTotalLoss) || 0;
   return `
     <section class="metrics-grid" aria-label="Portfolio metrics">
       <div class="metric"><span>Expected terminal wealth</span><strong>${formatMoney(result.terminal.expected)}</strong><em>${formatMoic(result.moic.expected)} weighted MOIC</em></div>
       <div class="metric"><span>5th percentile proxy</span><strong>${formatMoney(result.terminal.fifth)}</strong><em>${formatPercent(result.lossAtBear)} drawdown in bear case</em></div>
-      <div class="metric"><span>Options max loss</span><strong>${formatMoney(result.maxOptionsLoss)}</strong><em>premium sleeve at risk</em></div>
-      <div class="metric"><span>Scenario odds</span><strong>${formatPercent(result.probabilities.bull)} bull</strong><em>${formatPercent(result.probabilities.base)} base · ${formatPercent(result.probabilities.bear)} bear</em></div>
+      <div class="metric"><span>Options max loss</span><strong>${formatMoney(result.maxOptionsLoss)}</strong><em>${maxLossBudget}% loss budget · premium sleeve at risk</em></div>
+      <div class="metric"><span>${escapeHtml(profile.label)}</span><strong>${formatPercent(result.probabilities.bull)} bull</strong><em>${escapeHtml(profile.target)} · ${formatPercent(result.probabilities.bear)} bear</em></div>
     </section>
   `;
 }
@@ -336,6 +356,7 @@ function renderMetrics() {
 function renderActiveTab() {
   if (state.activeTab === "Landscape") return renderLandscape();
   if (state.activeTab === "Options Ladder") return renderOptionsLadder();
+  if (state.activeTab === "Event Radar") return renderEventRadar();
   if (state.activeTab === "Idea Board") return renderIdeaBoard();
   if (state.activeTab === "Sentiment") return renderSentiment();
   if (state.activeTab === "Risk Map") return renderRiskMap();
@@ -435,6 +456,62 @@ function renderOptionsLadder() {
         `).join("")}
       </section>
     </section>
+  `;
+}
+
+function renderEventRadar() {
+  return `
+    <section class="tab-panel">
+      <section class="panel narrative">
+        <h2>Late-breaking trade radar</h2>
+        <p>Use this page to decide whether new information should change the stack rank. High-urgency items can justify short-duration defined-risk options; long-cycle evidence should usually change sliders and portfolio weights instead.</p>
+      </section>
+      <section class="event-grid">
+        ${state.data.eventRadar.map((event) => renderEventCard(event)).join("")}
+      </section>
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Return Target Playbooks</h2>
+          <small>Choose the right failure mode</small>
+        </div>
+        <div class="archetype-grid">
+          ${state.data.tradeArchetypes.map((item) => `
+            <article class="archetype-card">
+              <header><h3>${escapeHtml(item.label)}</h3><span class="tag ${item.id === "1000x-tail" ? "danger" : item.id === "survivable-core" ? "good" : "warn"}">${escapeHtml(item.id)}</span></header>
+              <p><strong>Use when:</strong> ${escapeHtml(item.useWhen)}</p>
+              <p><strong>Structure:</strong> ${escapeHtml(item.structure)}</p>
+              <p>${item.bestFit.map((symbol) => `<button class="ticker-chip" data-select="${symbol}" type="button">${symbol}</button>`).join("")}</p>
+              <p class="footer-note">Failure mode: ${escapeHtml(item.failureMode)}</p>
+            </article>
+          `).join("")}
+        </div>
+      </section>
+    </section>
+  `;
+}
+
+function renderEventCard(event) {
+  const sourceLinks = event.sources
+    .map((id) => state.data.sources.find((source) => source.id === id))
+    .filter(Boolean)
+    .map((source) => source.url ? `<a href="${escapeAttr(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.title)}</a>` : escapeHtml(source.title))
+    .join(" · ");
+  return `
+    <article class="panel event-card">
+      <div class="panel-header">
+        <h2>${escapeHtml(event.headline)}</h2>
+        <small>${escapeHtml(event.timeframe)}</small>
+      </div>
+      <div class="event-body">
+        <p>${escapeHtml(event.whyItMatters)}</p>
+        <p><strong>Model move:</strong> ${escapeHtml(event.tilt)}</p>
+        <div class="two-mini-cols">
+          <div><span class="panel-kicker">Beneficiaries</span><p>${event.beneficiaries.map((symbol) => `<button class="ticker-chip" data-select="${symbol}" type="button">${symbol}</button>`).join("")}</p></div>
+          <div><span class="panel-kicker">At risk</span><p>${event.atRisk.map((symbol) => `<button class="ticker-chip muted-chip" data-select="${symbol}" type="button">${symbol}</button>`).join("")}</p></div>
+        </div>
+        <p class="footer-note">Sources: ${sourceLinks}</p>
+      </div>
+    </article>
   `;
 }
 
@@ -795,9 +872,15 @@ function bindEvents() {
   const capital = document.getElementById("capitalInput");
   const equity = document.getElementById("equityInput");
   const options = document.getElementById("optionsInput");
+  const riskProfile = document.getElementById("riskProfileInput");
+  const targetReturn = document.getElementById("targetReturnInput");
+  const maxLoss = document.getElementById("maxLossInput");
   if (capital) capital.addEventListener("change", () => updatePortfolio("capital", clamp(Number(capital.value), 1000, 100000000)));
   if (equity) equity.addEventListener("change", () => updatePortfolio("equityCap", clamp(Number(equity.value), 0, 100)));
   if (options) options.addEventListener("change", () => updatePortfolio("optionsCap", clamp(Number(options.value), 0, 100)));
+  if (riskProfile) riskProfile.addEventListener("change", () => applyRiskProfile(riskProfile.value));
+  if (targetReturn) targetReturn.addEventListener("change", () => updatePortfolio("targetReturn", targetReturn.value));
+  if (maxLoss) maxLoss.addEventListener("change", () => updatePortfolio("maxTotalLoss", clamp(Number(maxLoss.value), 0, 100)));
 
   document.getElementById("copyScenario")?.addEventListener("click", copyScenarioLink);
   document.getElementById("exportScenario")?.addEventListener("click", exportScenario);
@@ -816,6 +899,22 @@ function bindEvents() {
 
 function updatePortfolio(key, value) {
   state.portfolio[key] = value;
+  recalculate();
+  render();
+}
+
+function applyRiskProfile(profileId) {
+  const profile = (state.data.riskProfiles || []).find((item) => item.id === profileId) || getRiskProfile();
+  state.portfolio.riskProfile = profile.id;
+  state.portfolio.targetReturn = profile.target.includes("100x") ? "100x-1000x" :
+    profile.target.includes("10x") ? "10x-50x" :
+    profile.id === "survival" ? "Do-not-zero" : "3x-10x";
+  state.portfolio.equityCap = profile.defaultEquity;
+  state.portfolio.optionsCap = profile.defaultOptions;
+  state.portfolio.cashMin = profile.defaultCash;
+  state.portfolio.maxTotalLoss = profile.maxTotalLoss;
+  if (Number.isFinite(Number(profile.maxSingleEquity))) state.portfolio.maxSingleEquity = Number(profile.maxSingleEquity);
+  if (Number.isFinite(Number(profile.maxSingleOption))) state.portfolio.maxSingleOption = Number(profile.maxSingleOption);
   recalculate();
   render();
 }
@@ -846,9 +945,11 @@ function importScenario(event) {
         });
       }
       if (parsed.portfolio) {
-        ["capital", "equityCap", "optionsCap", "cashMin"].forEach((key) => {
+        ["capital", "equityCap", "optionsCap", "cashMin", "maxTotalLoss", "maxSingleEquity", "maxSingleOption"].forEach((key) => {
           if (Number.isFinite(Number(parsed.portfolio[key]))) state.portfolio[key] = Number(parsed.portfolio[key]);
         });
+        if (parsed.portfolio.riskProfile) state.portfolio.riskProfile = String(parsed.portfolio.riskProfile);
+        if (parsed.portfolio.targetReturn) state.portfolio.targetReturn = String(parsed.portfolio.targetReturn);
       }
       state.selectedSymbol = parsed.selectedSymbol || state.selectedSymbol;
       if (Array.isArray(parsed.collabNotes)) {
@@ -983,6 +1084,34 @@ function scoreBar(value) {
 function qualityMeter(value) {
   const blocks = Array.from({ length: 5 }, (_, index) => `<span class="legend-dot" style="background:${index < value ? "#196d68" : "#d8ddd9"}"></span>`).join("");
   return `<span style="display:inline-flex;gap:3px">${blocks}</span>`;
+}
+
+function getRiskProfile() {
+  const profiles = state.data?.riskProfiles || [];
+  return profiles.find((profile) => profile.id === state.portfolio.riskProfile) ||
+    profiles[0] ||
+    {
+      id: "default",
+      label: "Speculative",
+      target: "Options sleeve",
+      summary: "Defined-risk options and equities only.",
+      scoreTilt: { expected: 1, convexity: 1, liquidity: 1, valuationPenalty: 1, bearPenalty: 1 }
+    };
+}
+
+function targetReturnBoost(item, bear, base, bull) {
+  const target = state.portfolio.targetReturn || getRiskProfile().target;
+  const optionsEligible = item.optionsLiquidity >= 48;
+  if (target === "100x-1000x") {
+    return (bull - base) * 11 + item.convexity * 0.22 + (optionsEligible ? 8 : -6) - Math.max(0, bear - 0.8) * 10;
+  }
+  if (target === "10x-50x") {
+    return Math.min(22, (bull - 1) * 5) + item.convexity * 0.09 + item.liquidity * 0.07 - Math.max(0, 0.65 - bear) * 8;
+  }
+  if (target === "Do-not-zero") {
+    return bear * 18 + item.liquidity * 0.16 - item.valuationRisk * 0.22 - Math.max(0, bull - 5) * 2;
+  }
+  return base * 8 + item.liquidity * 0.12 - item.valuationRisk * 0.08;
 }
 
 function heatColor(value) {

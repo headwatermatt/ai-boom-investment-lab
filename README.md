@@ -17,6 +17,8 @@ Use **Copy collaboration link** inside the app to share the current scenario, se
 
 This is asynchronous collaboration. There is no account system, central database, broker connection, or live multi-user state in this static version.
 
+The risk-profile selector lets each investor choose between a moonshot options-heavy sleeve, a 10x-50x asymmetric structure, a high-risk survivable core, or a do-not-zero posture. The Event Radar tab is for late-breaking policy, tariff, geopolitics, capex, and architecture headlines that can change the trade stack before the long-cycle model catches up.
+
 ## Contents
 
 - `index.html` - static app shell

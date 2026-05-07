@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 const chromePath = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
-const targetUrl = "http://127.0.0.1:4173/";
+const targetUrl = process.env.AI_LAB_SMOKE_URL || "http://127.0.0.1:4173/";
 const viewports = [
   { name: "desktop", width: 1440, height: 900, port: 9333 },
   { name: "mobile", width: 390, height: 844, port: 9334 }
@@ -39,6 +39,13 @@ async function runViewport({ name, width, height, port }) {
       const before = document.querySelector('.metric strong')?.textContent || '';
       document.querySelector('[data-tab="Options Ladder"]').click();
       const optionsVisible = document.body.textContent.includes('Convex sleeve design');
+      document.querySelector('[data-tab="Event Radar"]').click();
+      const eventVisible = document.body.textContent.includes('Late-breaking trade radar') &&
+        document.body.textContent.includes('AI chip export-control');
+      document.querySelector('#riskProfileInput').value = 'survival';
+      document.querySelector('#riskProfileInput').dispatchEvent(new Event('change', { bubbles: true }));
+      const survivalVisible = document.body.textContent.includes('Do-not-zero') &&
+        document.querySelector('#maxLossInput')?.value === '25';
       document.querySelector('[data-tab="Idea Board"]').click();
       document.querySelector('#ideaAuthor').value = 'QA';
       document.querySelector('#ideaTrade').value = 'RMBS common plus LEAPS';
@@ -51,13 +58,15 @@ async function runViewport({ name, width, height, port }) {
       const after = document.querySelector('.metric strong')?.textContent || '';
       document.querySelector('#copyScenario').click();
       const hashOk = location.hash.startsWith('#scenario=');
-      const sourceVisible = Array.from(document.querySelectorAll('[data-tab]')).length === 7;
+      const sourceVisible = Array.from(document.querySelectorAll('[data-tab]')).length === 8;
       return {
         title: document.title,
         before,
         after,
         changed: before !== after,
         optionsVisible,
+        eventVisible,
+        survivalVisible,
         ideaVisible,
         hashOk,
         sourceVisible,
@@ -69,6 +78,8 @@ async function runViewport({ name, width, height, port }) {
     await client.close();
     assert(smoke.title === "AI Boom Bottleneck Investment Lab", `${name}: wrong title`);
     assert(smoke.optionsVisible, `${name}: options tab did not render`);
+    assert(smoke.eventVisible, `${name}: event radar did not render`);
+    assert(smoke.survivalVisible, `${name}: risk profile did not apply`);
     assert(smoke.ideaVisible, `${name}: idea board note did not render`);
     assert(smoke.changed, `${name}: slider did not change metrics`);
     assert(smoke.hashOk, `${name}: scenario hash not created`);

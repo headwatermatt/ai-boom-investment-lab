@@ -279,9 +279,15 @@ a:hover {
   font-size: 13px;
 }
 
+.control-summary {
+  margin: -2px 0 12px;
+  color: #3a4541;
+  font-size: 12px;
+}
+
 .input-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
   margin-bottom: 12px;
 }
@@ -291,7 +297,7 @@ a:hover {
   gap: 5px;
 }
 
-.input-field label {
+.input-field > span {
   font-size: 11px;
   color: var(--muted);
 }
@@ -779,6 +785,100 @@ tr.selectable.selected {
   font-size: 12px;
 }
 
+.event-grid,
+.archetype-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.event-card {
+  min-width: 0;
+}
+
+.event-body {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+}
+
+.event-body p,
+.archetype-card p {
+  margin: 0;
+  color: #303936;
+  font-size: 12px;
+}
+
+.two-mini-cols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.two-mini-cols > div {
+  min-width: 0;
+  padding: 9px;
+  border: 1px solid #edf0ee;
+  border-radius: 7px;
+  background: #fbfcfb;
+}
+
+.two-mini-cols p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+.archetype-grid {
+  padding: 12px;
+}
+
+.archetype-card {
+  display: grid;
+  gap: 9px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #fff;
+}
+
+.archetype-card header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.archetype-card h3 {
+  margin: 0;
+  font-size: 13px;
+}
+
+.ticker-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  margin: 0 5px 5px 0;
+  padding: 0 8px;
+  border-color: #b9d5d1;
+  background: #eef6f4;
+  color: var(--teal);
+  font-size: 11px;
+  font-weight: 720;
+}
+
+.ticker-chip:hover {
+  border-color: #83b9b2;
+  background: #e0f0ed;
+}
+
+.muted-chip {
+  border-color: #e1c28d;
+  background: #fff7e8;
+  color: #7b4d0b;
+}
+
 .kv-list {
   display: grid;
   gap: 5px;
@@ -993,6 +1093,18 @@ tr.selectable.selected {
     max-width: 100vw;
   }
 
+  .workspace {
+    order: 1;
+  }
+
+  .control-rail {
+    order: 2;
+  }
+
+  .inspector {
+    order: 3;
+  }
+
   .control-rail,
   .inspector {
     position: static;
@@ -1021,6 +1133,8 @@ tr.selectable.selected {
   .two-col,
   .three-col,
   .option-grid,
+  .event-grid,
+  .archetype-grid,
   .sentiment-grid {
     grid-template-columns: 1fr;
   }
@@ -1116,7 +1230,9 @@ tr.selectable.selected {
   }
 
   .idea-actions,
-  .idea-card header {
+  .idea-card header,
+  .archetype-card header,
+  .two-mini-cols {
     display: grid;
     grid-template-columns: 1fr;
   }

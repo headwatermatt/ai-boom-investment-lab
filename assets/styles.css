@@ -107,7 +107,7 @@ a:hover {
   top: 0;
   z-index: 20;
   display: grid;
-  grid-template-columns: minmax(250px, 1fr) auto auto;
+  grid-template-columns: minmax(330px, 1fr) auto auto;
   gap: 16px;
   align-items: center;
   min-height: 62px;
@@ -121,6 +121,10 @@ a:hover {
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
+}
+
+.brand-text {
   min-width: 0;
 }
 
@@ -142,9 +146,9 @@ a:hover {
   font-size: 16px;
   line-height: 1.1;
   font-weight: 760;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
 }
 
 .brand p {
@@ -160,18 +164,23 @@ a:hover {
   display: flex;
   align-items: center;
   gap: 4px;
+  min-width: 0;
   border: 1px solid var(--border);
   border-radius: 7px;
   padding: 3px;
   background: var(--panel);
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
 
 .tab {
+  flex: 0 0 auto;
   min-height: 30px;
   border: 0;
   color: var(--muted);
   background: transparent;
   padding: 0 10px;
+  white-space: nowrap;
 }
 
 .tab.active {
@@ -349,6 +358,46 @@ a:hover {
 .input-field textarea {
   min-height: 112px;
   resize: vertical;
+}
+
+.allocation-check {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 10px;
+  align-items: center;
+  margin: -2px 0 12px;
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: #fbfcfb;
+}
+
+.allocation-check span {
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.allocation-check strong {
+  color: var(--teal);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.allocation-check em {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 11px;
+  font-style: normal;
+}
+
+.allocation-check.warn {
+  border-color: #e1c28d;
+  background: #fff7e8;
+}
+
+.allocation-check.warn strong {
+  color: #7b4d0b;
 }
 
 .slider-group {
@@ -817,7 +866,8 @@ tr.selectable.selected {
 }
 
 .event-grid,
-.archetype-grid {
+.archetype-grid,
+.combo-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
@@ -973,7 +1023,8 @@ tr.selectable.selected {
   padding: 12px;
 }
 
-.archetype-card {
+.archetype-card,
+.combo-card {
   display: grid;
   gap: 9px;
   padding: 12px;
@@ -982,16 +1033,44 @@ tr.selectable.selected {
   background: #fff;
 }
 
-.archetype-card header {
+.combo-grid {
+  padding: 12px;
+}
+
+.archetype-card header,
+.combo-card header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
 }
 
-.archetype-card h3 {
+.archetype-card h3,
+.combo-card h3 {
   margin: 0;
   font-size: 13px;
+}
+
+.combo-card p {
+  margin: 0;
+  color: #303936;
+  font-size: 12px;
+}
+
+.combo-card header p {
+  margin-top: 2px;
+  color: var(--muted);
+}
+
+.combo-body {
+  display: grid;
+  gap: 7px;
+}
+
+.structure-note {
+  margin: -2px 12px 12px;
+  color: var(--muted);
+  font-size: 11px;
 }
 
 .ticker-chip {
@@ -1192,27 +1271,29 @@ tr.selectable.selected {
   font-size: 11px;
 }
 
-@media (max-width: 1350px) {
+@media (max-width: 1500px) {
   .topbar {
-    grid-template-columns: minmax(220px, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
   }
 
   .tabs {
     grid-column: 1 / -1;
+    grid-row: 2;
     width: 100%;
     overflow-x: auto;
   }
 
   .top-actions {
     grid-column: 2;
+    grid-row: 1;
     justify-self: end;
   }
 }
 
-@media (max-width: 1220px) {
+@media (max-width: 1350px) {
   .grid-shell {
-    grid-template-columns: 280px minmax(0, 1fr);
+    grid-template-columns: 300px minmax(0, 1fr);
   }
 
   .inspector {
@@ -1242,6 +1323,7 @@ tr.selectable.selected {
 
   .top-actions {
     grid-column: 1;
+    grid-row: auto;
     justify-self: stretch;
     overflow-x: auto;
     max-width: calc(100vw - 20px);
@@ -1295,6 +1377,7 @@ tr.selectable.selected {
   .option-grid,
   .event-grid,
   .archetype-grid,
+  .combo-grid,
   .timeline-idea-grid,
   .event-tape-grid,
   .sentiment-grid {

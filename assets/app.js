@@ -238,6 +238,135 @@ function optionContract(item) {
   };
 }
 
+function comboStrategies() {
+  const months = Number(state.portfolio.timelineMonths) || 0;
+  const eventIntensity = clamp(Number(state.portfolio.eventTapeIntensity) || 0, 0, 100);
+  const liquid = state.ranked.filter((item) => item.optionsLiquidity >= 50);
+  const highConvexity = liquid.filter((item) => item.convexity >= 68);
+  const highRisk = liquid.filter((item) => item.valuationRisk >= 62);
+  const resilient = liquid.filter((item) => item.adjustedMoic.bear >= 0.85 && item.liquidity >= 55);
+  const jumboTape = liquid.filter((item) => ["NVDA", "TSM", "AVGO", "ASML", "AMAT", "QQQ", "SPY", "SMH", "VRT", "CRDO", "ALAB"].includes(item.symbol));
+  const strategies = [];
+
+  const callSpread = pickBest(highConvexity, (item) =>
+    item.rankScore + item.convexity * 0.55 + item.optionsLiquidity * 0.35 + item.valuationRisk * 0.18
+  );
+  if (callSpread) strategies.push({
+    title: "Debit Call Spread",
+    item: callSpread.item,
+    score: callSpread.score,
+    tone: "good",
+    useWhen: "The upside thesis is strong but straight calls look too expensive or IV is elevated.",
+    structure: `Buy a ${optionContract(callSpread.item).tenor} call near 25-40 delta and sell a farther OTM call against it; keep max loss to the debit paid.`,
+    why: `${callSpread.item.symbol} has strong convexity (${callSpread.item.convexity}/100), usable option liquidity, and enough bull/base separation to justify capped upside.`,
+    guardrail: "Best for 10x-50x style payoff targets; capped upside means it is not the purest 100x-1000x expression."
+  });
+
+  const leapDiagonal = pickBest(highConvexity.filter((item) => item.volatility >= 45), (item) =>
+    item.rankScore + item.optionsLiquidity * 0.55 + item.volatility * 0.35 + Math.max(0, item.adjustedMoic.base - 1) * 12
+  );
+  if (leapDiagonal) strategies.push({
+    title: "LEAPS Diagonal",
+    item: leapDiagonal.item,
+    score: leapDiagonal.score,
+    tone: "warn",
+    useWhen: "You want long-duration upside but expect repeated short-term volatility spikes before the thesis fully pays.",
+    structure: `Own a deep ITM ${optionContract(leapDiagonal.item).tenor} call and sell short-dated OTM calls only after sharp rallies or event-vol spikes.`,
+    why: `${leapDiagonal.item.symbol} combines long-cycle bottleneck upside with enough option activity to consider harvesting shorter-dated premium.`,
+    guardrail: "Assignment, early exercise, and capped upside matter; do not sell calls through catalysts where you want uncapped exposure."
+  });
+
+  const coveredCall = pickBest(resilient.filter((item) => item.valuationRisk >= 55), (item) =>
+    item.expectedMoic * 20 + item.optionsLiquidity * 0.4 + item.volatility * 0.28 - Math.max(0, item.convexity - 82) * 0.3
+  );
+  if (coveredCall) strategies.push({
+    title: "Covered Call / Buy-Write",
+    item: coveredCall.item,
+    score: coveredCall.score,
+    tone: "good",
+    useWhen: "A friend wants AI exposure but prefers income and lower break-even over uncapped moonshot upside.",
+    structure: `Buy common stock and sell 30-60 DTE OTM calls against only the portion you are willing to have called away.`,
+    why: `${coveredCall.item.symbol} has a survivable bear/base profile and enough volatility to make overwrite math worth checking.`,
+    guardrail: "This can be a bad structure for true moonshots because the short call sells away the explosive right tail."
+  });
+
+  const protectiveCollar = pickBest(highRisk, (item) =>
+    item.valuationRisk * 0.7 + item.liquidity * 0.35 + item.optionsLiquidity * 0.35 + state.factors.taiwan * 0.18 + state.factors.export * 0.15
+  );
+  if (protectiveCollar) strategies.push({
+    title: "Protective Collar",
+    item: protectiveCollar.item,
+    score: protectiveCollar.score,
+    tone: "warn",
+    useWhen: "You want to own the bottleneck winner but the current tape has geopolitical, export-control, or valuation gap risk.",
+    structure: "Own common, buy a protective put, and optionally sell an OTM call to partially fund protection.",
+    why: `${protectiveCollar.item.symbol} ranks with elevated valuation/event risk, so the best expression may be protected equity rather than naked upside.`,
+    guardrail: "The call leg caps upside; use collars for survival profiles or event-risk windows, not for maximum convexity sleeves."
+  });
+
+  const cashSecuredPut = pickBest(resilient, (item) =>
+    item.expectedMoic * 18 + item.conviction * 0.25 + item.optionsLiquidity * 0.35 + Math.max(0, item.valuationRisk - 55) * 0.25
+  );
+  if (cashSecuredPut) strategies.push({
+    title: "Cash-Secured Put Entry",
+    item: cashSecuredPut.item,
+    score: cashSecuredPut.score,
+    tone: "good",
+    useWhen: "You like the name but want to be paid for waiting for a pullback instead of chasing a spike.",
+    structure: "Sell a cash-secured put at a price where you would be happy to own common; hold full assignment cash.",
+    why: `${cashSecuredPut.item.symbol} has sufficient liquidity and a constructive base case, making entry discipline more valuable than immediate FOMO.`,
+    guardrail: "Return is capped and assignment is real; this is not a 100x expression, but it can improve entries for safer sleeves."
+  });
+
+  if (months <= 1 || eventIntensity >= 55) {
+    const eventPremium = pickBest(jumboTape, (item) =>
+      item.optionsLiquidity * 0.8 + item.volatility * 0.55 + item.liquidity * 0.25 + shortCatalystScore(item) * 3 + eventIntensity * 0.15
+    );
+    if (eventPremium) strategies.push({
+      title: "Defined-Risk Event Strangle",
+      item: eventPremium.item,
+      score: eventPremium.score,
+      tone: "danger",
+      useWhen: "A known catalyst, policy headline, or social-tape shock can move the name hard but direction is uncertain.",
+      structure: "Buy a short-dated strangle or broken-wing fly with premium sized as a throwaway event sleeve.",
+      why: `${eventPremium.item.symbol} has the liquidity and tape sensitivity needed for intraday-to-weekly event structures.`,
+      guardrail: "Do not use this without live IV, spread, and catalyst timing checks; most short-dated premium can expire worthless."
+    });
+  }
+
+  const stockReplacement = pickBest(highConvexity, (item) =>
+    item.rankScore + item.liquidity * 0.25 + item.optionsLiquidity * 0.4 + Math.max(0, state.portfolio.optionsCap - 40) * 0.18
+  );
+  if (stockReplacement) strategies.push({
+    title: "Stock Replacement Call",
+    item: stockReplacement.item,
+    score: stockReplacement.score,
+    tone: "warn",
+    useWhen: "You want upside exposure with less capital tied up than common and accept the possibility of total premium loss.",
+    structure: `Buy a deep ITM ${optionContract(stockReplacement.item).tenor} call with enough delta to behave like stock; reserve released cash for adds or hedges.`,
+    why: `${stockReplacement.item.symbol} has the options liquidity and convexity profile to justify replacing some common with long calls.`,
+    guardrail: "This raises timing risk versus stock; avoid if the thesis could take longer than the option tenor."
+  });
+
+  return dedupeStrategies(strategies).sort((a, b) => b.score - a.score);
+}
+
+function pickBest(items, scoreFn) {
+  return items
+    .map((item) => ({ item, score: scoreFn(item) }))
+    .sort((a, b) => b.score - a.score)[0];
+}
+
+function dedupeStrategies(strategies) {
+  const seen = new Set();
+  return strategies.filter((strategy) => {
+    const key = `${strategy.title}-${strategy.item.symbol}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 function portfolioResults(allocations, probabilities) {
   const capital = Number(state.portfolio.capital) || 100000;
   let bear = 0;
@@ -281,7 +410,7 @@ function render() {
     <header class="topbar">
       <div class="brand">
         <div class="brand-mark">AI</div>
-        <div>
+        <div class="brand-text">
           <h1>${escapeHtml(state.data.metadata.title)}</h1>
           <p>${escapeHtml(state.data.metadata.horizon)} speculative bottleneck lab · ${escapeHtml(state.data.metadata.dataCutoff)} snapshot</p>
         </div>
@@ -320,6 +449,7 @@ function renderLiveSections() {
 function renderControls() {
   const profiles = state.data.riskProfiles || [];
   const profile = getRiskProfile();
+  const sleeveTotal = roundPercent(Number(state.portfolio.equityCap) + Number(state.portfolio.optionsCap));
   return `
     <aside class="panel control-rail">
       <div class="panel-header">
@@ -337,9 +467,14 @@ function renderControls() {
           <label class="input-field"><span>Target payoff</span><select id="targetReturnInput">${["100x-1000x", "10x-50x", "3x-10x", "Do-not-zero"].map((target) => `<option value="${target}" ${target === state.portfolio.targetReturn ? "selected" : ""}>${target}</option>`).join("")}</select></label>
           <label class="input-field"><span>Max premium loss %</span><input id="maxLossInput" type="number" min="0" max="100" step="5" value="${state.portfolio.maxTotalLoss}"></label>
           <label class="input-field"><span>Capital</span><input id="capitalInput" type="number" min="1000" step="1000" value="${state.portfolio.capital}"></label>
-          <label class="input-field"><span>Equity %</span><input id="equityInput" type="number" min="0" max="100" step="1" value="${state.portfolio.equityCap}"></label>
-          <label class="input-field"><span>Options %</span><input id="optionsInput" type="number" min="0" max="100" step="1" value="${state.portfolio.optionsCap}"></label>
+          <label class="input-field"><span>Equity sleeve %</span><input id="equityInput" type="number" min="0" max="100" step="1" value="${state.portfolio.equityCap}"></label>
+          <label class="input-field"><span>Options sleeve %</span><input id="optionsInput" type="number" min="0" max="100" step="1" value="${state.portfolio.optionsCap}"></label>
           <label class="input-field"><span>Cap appetite</span><select id="capAppetiteInput">${capAppetiteOptions().map((option) => `<option value="${option.id}" ${option.id === state.portfolio.capAppetite ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}</select></label>
+        </div>
+        <div class="allocation-check ${Math.abs(sleeveTotal - 100) < 0.01 ? "good" : "warn"}">
+          <span>Equity + options split</span>
+          <strong>${sleeveTotal}%</strong>
+          <em>Changing either sleeve rebalances the other to keep the visible split at 100%.</em>
         </div>
         <div class="timeline-control">
           <div class="slider-label"><strong>Investment timeline</strong><output>${escapeHtml(formatTimelineMonths(state.portfolio.timelineMonths))}</output></div>
@@ -552,6 +687,39 @@ function renderOptionsLadder() {
           </article>
         `).join("")}
       </section>
+      ${renderComboStrategies()}
+    </section>
+  `;
+}
+
+function renderComboStrategies() {
+  const strategies = comboStrategies().slice(0, 8);
+  return `
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Combo Strategy Selector</h2>
+        <small>Defined-risk structures · proxy setup</small>
+      </div>
+      <div class="combo-grid">
+        ${strategies.map((strategy) => `
+          <article class="combo-card selectable-card" data-select="${strategy.item.symbol}">
+            <header>
+              <div>
+                <h3>${escapeHtml(strategy.title)}</h3>
+                <p>${strategy.item.symbol} · ${escapeHtml(strategy.item.company)}</p>
+              </div>
+              <span class="tag ${strategy.tone}">${Math.round(clamp(strategy.score / 4, 0, 100))} fit</span>
+            </header>
+            <div class="combo-body">
+              <p><strong>Use when:</strong> ${escapeHtml(strategy.useWhen)}</p>
+              <p><strong>Structure:</strong> ${escapeHtml(strategy.structure)}</p>
+              <p><strong>Why this ticker:</strong> ${escapeHtml(strategy.why)}</p>
+              <p class="footer-note">${escapeHtml(strategy.guardrail)}</p>
+            </div>
+          </article>
+        `).join("")}
+      </div>
+      <p class="structure-note">Combo structures are a decision-support overlay on the current scenario, not executable quotes. Refresh option chains, bid/ask, IV rank, open interest, borrow/assignment rules, and tax treatment before trading.</p>
     </section>
   `;
 }
@@ -1075,17 +1243,16 @@ function updatePortfolio(key, value) {
 }
 
 function updateSleeve(key, value) {
-  const cash = clamp(Number(state.portfolio.cashMin) || 0, 0, 100);
-  const available = Math.max(0, 100 - cash);
-  const next = clamp(Number(value), 0, available);
+  state.portfolio.cashMin = 0;
+  const next = clamp(Number(value), 0, 100);
   if (key === "optionsCap") {
     state.portfolio.optionsCap = Math.min(next, getMaxPremiumLoss());
-    state.portfolio.equityCap = Math.max(0, 100 - cash - state.portfolio.optionsCap);
+    state.portfolio.equityCap = Math.max(0, 100 - state.portfolio.optionsCap);
   } else if (key === "equityCap") {
     state.portfolio.equityCap = next;
-    state.portfolio.optionsCap = Math.max(0, 100 - cash - state.portfolio.equityCap);
+    state.portfolio.optionsCap = Math.max(0, 100 - state.portfolio.equityCap);
     state.portfolio.optionsCap = Math.min(state.portfolio.optionsCap, getMaxPremiumLoss());
-    state.portfolio.equityCap = Math.max(0, 100 - cash - state.portfolio.optionsCap);
+    state.portfolio.equityCap = Math.max(0, 100 - state.portfolio.optionsCap);
   }
   recalculate();
   render();
@@ -1095,18 +1262,17 @@ function updateMaxPremiumLoss(value) {
   state.portfolio.maxTotalLoss = clamp(Number(value), 0, 100);
   if (Number(state.portfolio.optionsCap) > state.portfolio.maxTotalLoss) {
     state.portfolio.optionsCap = state.portfolio.maxTotalLoss;
-    state.portfolio.equityCap = Math.max(0, 100 - (Number(state.portfolio.cashMin) || 0) - state.portfolio.optionsCap);
+    state.portfolio.equityCap = Math.max(0, 100 - state.portfolio.optionsCap);
   }
   recalculate();
   render();
 }
 
 function normalizePortfolioSleeves() {
-  const cash = clamp(Number(state.portfolio.cashMin) || 0, 0, 100);
   const maxLoss = getMaxPremiumLoss();
-  const options = clamp(Number(state.portfolio.optionsCap) || 0, 0, Math.min(100 - cash, maxLoss));
-  const equity = Math.max(0, 100 - cash - options);
-  state.portfolio.cashMin = cash;
+  const options = clamp(Number(state.portfolio.optionsCap) || 0, 0, maxLoss);
+  const equity = Math.max(0, 100 - options);
+  state.portfolio.cashMin = 0;
   state.portfolio.optionsCap = roundPercent(options);
   state.portfolio.equityCap = roundPercent(equity);
   state.portfolio.timelineMonths = clamp(Number(state.portfolio.timelineMonths) || 0, 0, 60);
@@ -1127,7 +1293,7 @@ function applyRiskProfile(profileId) {
     profile.id === "survival" ? "Do-not-zero" : "3x-10x";
   state.portfolio.equityCap = profile.defaultEquity;
   state.portfolio.optionsCap = profile.defaultOptions;
-  state.portfolio.cashMin = profile.defaultCash;
+  state.portfolio.cashMin = 0;
   state.portfolio.maxTotalLoss = profile.maxTotalLoss;
   if (Number.isFinite(Number(profile.maxSingleEquity))) state.portfolio.maxSingleEquity = Number(profile.maxSingleEquity);
   if (Number.isFinite(Number(profile.maxSingleOption))) state.portfolio.maxSingleOption = Number(profile.maxSingleOption);

@@ -41,8 +41,35 @@ async function runViewport({ name, width, height, port }) {
       const before = document.querySelector('.metric strong')?.textContent || '';
       document.querySelector('#optionsInput').value = '60';
       document.querySelector('#optionsInput').dispatchEvent(new Event('change', { bubbles: true }));
-      const coupledAllocation = document.querySelector('#equityInput')?.value === '35' &&
+      const coupledAllocation = document.querySelector('#equityInput')?.value === '40' &&
         document.querySelector('#optionsInput')?.value === '60';
+      document.querySelector('#equityInput').value = '30';
+      document.querySelector('#equityInput').dispatchEvent(new Event('change', { bubbles: true }));
+      const reverseCoupledAllocation = document.querySelector('#equityInput')?.value === '30' &&
+        document.querySelector('#optionsInput')?.value === '70';
+      const sleeveTotal = Number(document.querySelector('#equityInput')?.value || 0) +
+        Number(document.querySelector('#optionsInput')?.value || 0);
+      const sleeveTotalVisible = document.body.textContent.includes('Equity + options split') &&
+        document.body.textContent.includes('100%');
+      const topbarRects = ['.brand', '.tabs', '.top-actions'].map((selector) => {
+        const rect = document.querySelector(selector).getBoundingClientRect();
+        return { selector, left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height };
+      });
+      const overlaps = (a, b) => Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left)) > 1 &&
+        Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top)) > 1;
+      const topbarNoOverlap = topbarRects.every((rect) => rect.width > 0 && rect.height > 0) &&
+        !overlaps(topbarRects[0], topbarRects[1]) &&
+        !overlaps(topbarRects[0], topbarRects[2]) &&
+        !overlaps(topbarRects[1], topbarRects[2]);
+      const titleVisible = document.querySelector('.brand h1')?.textContent === 'AI Boom Bottleneck Investment Lab' &&
+        document.querySelector('.brand h1')?.getClientRects().length > 0;
+      const boundedSelectors = ['.brand', '.tabs', '.top-actions', '.grid-shell', '.workspace', '.metrics-grid', '.chart-panel', '.control-rail'];
+      const boundedLayout = boundedSelectors.every((selector) => {
+        const node = document.querySelector(selector);
+        if (!node) return false;
+        const rect = node.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0 && rect.left >= -1 && rect.right <= window.innerWidth + 1;
+      });
       document.querySelector('#closeInspector')?.click();
       const inspectorClosed = !document.querySelector('.inspector') &&
         document.querySelector('.grid-shell')?.classList.contains('inspector-closed') &&
@@ -57,6 +84,9 @@ async function runViewport({ name, width, height, port }) {
         document.body.textContent.includes('public tape only');
       document.querySelector('[data-tab="Options Ladder"]').click();
       const optionsVisible = document.body.textContent.includes('Convex sleeve design');
+      const combosVisible = document.body.textContent.includes('Combo Strategy Selector') &&
+        document.body.textContent.includes('Covered Call / Buy-Write') &&
+        document.body.textContent.includes('Protective Collar');
       document.querySelector('[data-tab="Event Radar"]').click();
       const eventVisible = document.body.textContent.includes('Late-breaking trade radar') &&
         document.body.textContent.includes('AI chip export-control');
@@ -67,7 +97,7 @@ async function runViewport({ name, width, height, port }) {
       document.querySelector('#maxLossInput').value = '0';
       document.querySelector('#maxLossInput').dispatchEvent(new Event('change', { bubbles: true }));
       const zeroPremiumLossHonored = document.querySelector('#optionsInput')?.value === '0' &&
-        document.querySelector('#equityInput')?.value === '85';
+        document.querySelector('#equityInput')?.value === '100';
       document.querySelector('[data-tab="Idea Board"]').click();
       document.querySelector('#ideaAuthor').value = 'QA';
       document.querySelector('#ideaTrade').value = 'RMBS common plus LEAPS';
@@ -98,6 +128,12 @@ async function runViewport({ name, width, height, port }) {
         after,
         changed: before !== after,
         coupledAllocation,
+        reverseCoupledAllocation,
+        sleeveTotal,
+        sleeveTotalVisible,
+        topbarNoOverlap,
+        titleVisible,
+        boundedLayout,
         inspectorClosed,
         inspectorReopened,
         sliderRetained,
@@ -105,6 +141,7 @@ async function runViewport({ name, width, height, port }) {
         timelineVisible,
         zeroDteVisible,
         optionsVisible,
+        combosVisible,
         eventVisible,
         survivalVisible,
         zeroPremiumLossHonored,
@@ -121,12 +158,19 @@ async function runViewport({ name, width, height, port }) {
     assert(smoke.title === "AI Boom Bottleneck Investment Lab", `${name}: wrong title`);
     assert(smoke.optionsVisible, `${name}: options tab did not render`);
     assert(smoke.coupledAllocation, `${name}: options/equity allocation did not rebalance`);
+    assert(smoke.reverseCoupledAllocation, `${name}: equity/options reverse allocation did not rebalance`);
+    assert(smoke.sleeveTotal === 100, `${name}: visible sleeves total ${smoke.sleeveTotal}, not 100`);
+    assert(smoke.sleeveTotalVisible, `${name}: sleeve total helper is not visible`);
+    assert(smoke.topbarNoOverlap, `${name}: topbar regions overlap`);
+    assert(smoke.titleVisible, `${name}: full title text is not visible in the DOM`);
+    assert(smoke.boundedLayout, `${name}: primary layout extends outside the viewport`);
     assert(smoke.inspectorClosed, `${name}: inspector did not close cleanly`);
     assert(smoke.inspectorReopened, `${name}: inspector did not reopen cleanly`);
     assert(smoke.sliderRetained, `${name}: slider DOM was replaced during drag`);
     assert(smoke.secondSliderWorks, `${name}: second slider did not remain usable after first slider`);
     assert(smoke.timelineVisible, `${name}: timeline tab did not render`);
     assert(smoke.zeroDteVisible, `${name}: 0DTE event tape did not render`);
+    assert(smoke.combosVisible, `${name}: combo strategy selector did not render`);
     assert(smoke.eventVisible, `${name}: event radar did not render`);
     assert(smoke.survivalVisible, `${name}: risk profile did not apply`);
     assert(smoke.zeroPremiumLossHonored, `${name}: 0% max premium loss did not zero options sleeve`);

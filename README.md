@@ -19,6 +19,8 @@ This is asynchronous collaboration. There is no account system, central database
 
 The risk-profile selector lets each investor choose between a moonshot options-heavy sleeve, a 10x-50x asymmetric structure, a high-risk survivable core, or a do-not-zero posture. The Event Radar tab is for late-breaking policy, tariff, geopolitics, capex, and architecture headlines that can change the trade stack before the long-cycle model catches up.
 
+The Timeline tab lets users shift the model from 0DTE/1-2DTE public event tape through 3-5 year structural compounding. Options and equity sleeve percentages rebalance against each other, with cash held constant. The 0DTE/event-tape lane is a secondary, defined-risk framework only and excludes material nonpublic information.
+
 ## Contents
 
 - `index.html` - static app shell

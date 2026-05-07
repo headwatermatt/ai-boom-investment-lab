@@ -332,6 +332,13 @@ a:hover {
   gap: 12px;
 }
 
+.timeline-control {
+  display: grid;
+  gap: 6px;
+  padding: 10px 0;
+  border-top: 1px solid #edf0ee;
+}
+
 .slider-row {
   display: grid;
   gap: 6px;
@@ -470,7 +477,7 @@ input[type="range"] {
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 740px;
+  min-width: 820px;
 }
 
 th,
@@ -790,6 +797,114 @@ tr.selectable.selected {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+}
+
+.timeline-band {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  padding: 12px;
+}
+
+.timeline-segment {
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  min-height: 74px;
+  padding: 10px;
+  text-align: left;
+  background: #fbfcfb;
+}
+
+.timeline-segment strong {
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.timeline-segment span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.timeline-segment.active,
+.cap-button.active {
+  background: var(--charcoal);
+  border-color: var(--charcoal);
+  color: #fff;
+}
+
+.timeline-segment.active span {
+  color: #dfe6e3;
+}
+
+.timeline-detail {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+}
+
+.timeline-detail p {
+  margin: 0;
+  color: #303936;
+  font-size: 12px;
+}
+
+.cap-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.cap-button {
+  min-height: 36px;
+}
+
+.timeline-idea-grid,
+.event-tape-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 12px;
+}
+
+.timeline-idea,
+.event-tape-card {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #fff;
+}
+
+.timeline-idea {
+  cursor: pointer;
+}
+
+.timeline-idea:hover {
+  border-color: var(--border-strong);
+  background: #fbfcfb;
+}
+
+.timeline-idea header,
+.event-tape-card header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.timeline-idea h3,
+.event-tape-card h3 {
+  margin: 0;
+  font-size: 13px;
+}
+
+.timeline-idea p,
+.event-tape-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
 }
 
 .event-card {
@@ -1135,8 +1250,14 @@ tr.selectable.selected {
   .option-grid,
   .event-grid,
   .archetype-grid,
+  .timeline-idea-grid,
+  .event-tape-grid,
   .sentiment-grid {
     grid-template-columns: 1fr;
+  }
+
+  .timeline-band {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .risk-grid {
@@ -1232,8 +1353,15 @@ tr.selectable.selected {
   .idea-actions,
   .idea-card header,
   .archetype-card header,
+  .timeline-idea header,
+  .event-tape-card header,
   .two-mini-cols {
     display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .timeline-band,
+  .cap-grid {
     grid-template-columns: 1fr;
   }
 }

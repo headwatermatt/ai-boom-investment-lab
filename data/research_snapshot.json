@@ -18,6 +18,9 @@
     "riskProfile": "moonshot",
     "targetReturn": "100x-1000x",
     "maxTotalLoss": 100,
+    "timelineMonths": 24,
+    "capAppetite": "all",
+    "eventTapeIntensity": 35,
     "allowNakedOptions": false,
     "allowMargin": false
   },
@@ -417,6 +420,36 @@
       "url": "https://truthsocial.com/@realDonaldTrump",
       "quality": 1,
       "notes": "Manual check lane for tariff, Taiwan, China, AI chip, and data-center remarks. Do not treat posts as policy until corroborated by official action or credible reporting."
+    },
+    {
+      "id": "cboe-0dte",
+      "kind": "market_structure_primary",
+      "title": "0DTE Trading Resources",
+      "publisher": "Cboe",
+      "date": "2026",
+      "url": "https://www.cboe.com/tradable-products/0dte/",
+      "quality": 5,
+      "notes": "Primary exchange reference for same-day expiring index options, 0DTE volume context, and defined-risk spread mechanics."
+    },
+    {
+      "id": "finra-0dte",
+      "kind": "investor_risk_primary",
+      "title": "Zeroing In on an Options Trading Strategy: 0DTE",
+      "publisher": "FINRA",
+      "date": "2024",
+      "url": "https://www.finra.org/investors/insights/zeroing-in-options-trading-strategy",
+      "quality": 5,
+      "notes": "Investor-risk reference for pattern-day-trading, monitoring, assignment, and ultra-short-dated option risks."
+    },
+    {
+      "id": "investor-gov-insider-trading",
+      "kind": "legal_primary",
+      "title": "Insider Trading",
+      "publisher": "Investor.gov / SEC",
+      "date": "live",
+      "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/insider-trading",
+      "quality": 5,
+      "notes": "Legal boundary: do not trade on material nonpublic information. The app only models public rumors, official filings, public posts, and market data."
     }
   ],
   "claims": [
@@ -1136,6 +1169,94 @@
     {"window": "2026-2027", "event": "Ethernet vs optics/CPO architecture evidence", "impacted": ["CRDO", "ALAB", "ANET", "MRVL", "COHR", "CLS"], "trigger": "Move Ethernet/copper slider up for AEC wins, down for rapid CPO/optics substitution."},
     {"window": "2026-2028", "event": "Grid interconnection, power contracts, nuclear/SMR offtakes", "impacted": ["VRT", "MOD", "ETN", "PWR", "CEG", "VST", "CCJ"], "trigger": "Increase grid bottleneck slider when power access delays AI data-center projects."},
     {"window": "Anytime", "event": "Taiwan, China export-control, tariff, or Middle East shock", "impacted": ["TSM", "ASML", "CAMT", "FORM", "ONTO", "NVDA", "AVGO"], "trigger": "Raise geopolitical/export sliders and shift optimizer toward U.S. power/grid and cash."}
+  ],
+  "timelineHorizons": [
+    {
+      "id": "zero-two-day",
+      "label": "0DTE / 1-2 day tape",
+      "months": 0.07,
+      "summary": "Use only for defined-risk event trades based on public tape, abnormal volume, official posts, scheduled macro data, or confirmed breaking news.",
+      "fit": ["SPX", "XSP", "SPY", "QQQ", "SMH", "NVDA", "TSM", "AVGO", "ASML"],
+      "avoid": "Illiquid single-name contracts, microcaps, unverified private leaks, and any MNPI.",
+      "sourceIds": ["cboe-0dte", "finra-0dte", "investor-gov-insider-trading"]
+    },
+    {
+      "id": "one-four-week",
+      "label": "1-4 week catalyst",
+      "months": 0.75,
+      "summary": "Use for earnings, guidance revisions, export-control decisions, hyperscaler capex prints, and high-conviction volatility dislocations.",
+      "fit": ["NVDA", "AVGO", "TSM", "ASML", "CRDO", "ALAB", "VRT", "MOD"],
+      "avoid": "Thesis trades whose catalyst is more than one earnings cycle away.",
+      "sourceIds": ["axios-trump-chip-policy", "axios-chip-tariff", "truth-social-watch"]
+    },
+    {
+      "id": "one-three-month",
+      "label": "1-3 month rerating",
+      "months": 2,
+      "summary": "Use when market prices are reacting to architecture, capex, policy, or supply-chain data before full-year numbers move.",
+      "fit": ["CRDO", "ALAB", "ANET", "MRVL", "COHR", "RMBS", "FORM", "ONTO"],
+      "avoid": "Far-OTM options that need a multi-year adoption curve to work.",
+      "sourceIds": ["crdo-q3-2026", "alab-q1-2026", "tomshardware-nvidia-china"]
+    },
+    {
+      "id": "six-twelve-month",
+      "label": "6-12 month thesis build",
+      "months": 9,
+      "summary": "Use for names where backlog, design wins, HBM/tool adoption, or power constraints should show up over several quarters.",
+      "fit": ["RMBS", "FORM", "ONTO", "CAMT", "BESIY", "VRT", "MOD", "CLS"],
+      "avoid": "0DTE/weekly structures unless there is a separate tape catalyst.",
+      "sourceIds": ["rmbs-q1-2026", "form-q1-2026", "onto-q1-2026", "camtek-fy-2025"]
+    },
+    {
+      "id": "eighteen-thirtysix-month",
+      "label": "18-36 month core moonshot",
+      "months": 24,
+      "summary": "Default lab horizon for AI bottleneck compounding, HBM4/HBM4E adoption, advanced packaging, networking, cooling, and grid/power scarcity.",
+      "fit": ["RMBS", "FORM", "ONTO", "CAMT", "BESIY", "CRDO", "ALAB", "VRT", "MOD", "PWR"],
+      "avoid": "Paying short-dated implied volatility for a long-duration thesis.",
+      "sourceIds": ["pdf-source", "iea-energy-ai", "tsmc-ar-2025"]
+    },
+    {
+      "id": "three-five-year",
+      "label": "3-5 year structural",
+      "months": 48,
+      "summary": "Use for power generation, grid, nuclear/uranium, deep supply-chain reshoring, and speculative micro/small-cap bottleneck discovery.",
+      "fit": ["CEG", "VST", "CCJ", "PWR", "ETN", "AMKR", "TER"],
+      "avoid": "Short-dated options except as a separately sized event sleeve.",
+      "sourceIds": ["iea-dc-2025", "eia-power-demand", "datacenterknowledge-capex"]
+    }
+  ],
+  "eventTapeCandidates": [
+    {
+      "id": "index-ai-beta",
+      "label": "Index AI beta shock",
+      "duration": "0DTE",
+      "instruments": ["SPX", "XSP", "SPY", "QQQ", "SMH"],
+      "signals": ["Truth Social / White House tariff or China posts", "FOMC or rates shock", "NVDA/mega-cap AI headline", "SOXX/SMH abnormal volume"],
+      "structure": "Defined-risk debit spreads or very small premium buys only; no naked short options.",
+      "guardrail": "Use public tape only. Do not trade on private earnings leaks or MNPI.",
+      "sources": ["cboe-0dte", "finra-0dte", "investor-gov-insider-trading"]
+    },
+    {
+      "id": "single-name-semi-event",
+      "label": "Single-name semi event",
+      "duration": "1-2DTE / weekly",
+      "instruments": ["NVDA", "TSM", "AVGO", "ASML", "CRDO", "ALAB"],
+      "signals": ["Earnings date proximity", "abnormal call/put volume vs open interest", "public customer/design-win report", "export-control decision window"],
+      "structure": "Vertical spreads around known catalysts; premium-at-risk sized outside the long-cycle portfolio.",
+      "guardrail": "Single names often lack true daily expiries; verify listed expiries, bid/ask, IV, and assignment rules in broker data.",
+      "sources": ["axios-trump-chip-policy", "axios-chip-tariff", "tomshardware-nvidia-china"]
+    },
+    {
+      "id": "microcap-public-rumor",
+      "label": "Micro/small-cap public rumor scout",
+      "duration": "2DTE-3 months",
+      "instruments": ["user watchlist", "low-float semicap suppliers", "photonics/materials/connectivity microcaps"],
+      "signals": ["Form 4 purchases", "S-3/ATM shelf changes", "public partner PR", "credible public customer-reference trail", "unusual relative volume"],
+      "structure": "Common stock or tiny premium-only calls where listed options are liquid enough; most microcaps should be equity-only.",
+      "guardrail": "Treat social chatter as investigation priority, not fact. Avoid illiquid spreads and anything sourced to private nonpublic information.",
+      "sources": ["investor-gov-insider-trading", "user-private-social"]
+    }
   ],
   "eventRadar": [
     {

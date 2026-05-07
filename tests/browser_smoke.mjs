@@ -37,6 +37,15 @@ async function runViewport({ name, width, height, port }) {
     await waitForReady(client);
     const smoke = await evaluate(client, `(() => {
       const before = document.querySelector('.metric strong')?.textContent || '';
+      document.querySelector('#optionsInput').value = '60';
+      document.querySelector('#optionsInput').dispatchEvent(new Event('change', { bubbles: true }));
+      const coupledAllocation = document.querySelector('#equityInput')?.value === '35' &&
+        document.querySelector('#optionsInput')?.value === '60';
+      document.querySelector('[data-tab="Timeline"]').click();
+      const timelineVisible = document.body.textContent.includes('Editable investment timeline');
+      document.querySelector('[data-set-timeline="0.07"]').click();
+      const zeroDteVisible = document.body.textContent.includes('0DTE / 1-2DTE Public Event Tape') &&
+        document.body.textContent.includes('public tape only');
       document.querySelector('[data-tab="Options Ladder"]').click();
       const optionsVisible = document.body.textContent.includes('Convex sleeve design');
       document.querySelector('[data-tab="Event Radar"]').click();
@@ -58,12 +67,15 @@ async function runViewport({ name, width, height, port }) {
       const after = document.querySelector('.metric strong')?.textContent || '';
       document.querySelector('#copyScenario').click();
       const hashOk = location.hash.startsWith('#scenario=');
-      const sourceVisible = Array.from(document.querySelectorAll('[data-tab]')).length === 8;
+      const sourceVisible = Array.from(document.querySelectorAll('[data-tab]')).length === 9;
       return {
         title: document.title,
         before,
         after,
         changed: before !== after,
+        coupledAllocation,
+        timelineVisible,
+        zeroDteVisible,
         optionsVisible,
         eventVisible,
         survivalVisible,
@@ -78,6 +90,9 @@ async function runViewport({ name, width, height, port }) {
     await client.close();
     assert(smoke.title === "AI Boom Bottleneck Investment Lab", `${name}: wrong title`);
     assert(smoke.optionsVisible, `${name}: options tab did not render`);
+    assert(smoke.coupledAllocation, `${name}: options/equity allocation did not rebalance`);
+    assert(smoke.timelineVisible, `${name}: timeline tab did not render`);
+    assert(smoke.zeroDteVisible, `${name}: 0DTE event tape did not render`);
     assert(smoke.eventVisible, `${name}: event radar did not render`);
     assert(smoke.survivalVisible, `${name}: risk profile did not apply`);
     assert(smoke.ideaVisible, `${name}: idea board note did not render`);

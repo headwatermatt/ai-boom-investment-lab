@@ -10,7 +10,7 @@ const state = {
   collabNotes: []
 };
 
-const tabs = ["Landscape", "Optimizer", "Options Ladder", "Event Radar", "Idea Board", "Sentiment", "Risk Map", "Source Ledger"];
+const tabs = ["Landscape", "Optimizer", "Timeline", "Options Ladder", "Event Radar", "Idea Board", "Sentiment", "Risk Map", "Source Ledger"];
 const colors = ["#196d68", "#c9821c", "#3c5f82", "#2b7a4b", "#7f5f9a", "#9b5a3f", "#6b7f52", "#b44b43", "#4e777a", "#9a8a3f"];
 const factorLabels = {
   capex: "Capex",
@@ -64,11 +64,12 @@ function loadScenarioFromHash() {
       });
     }
     if (parsed.portfolio) {
-      ["capital", "equityCap", "optionsCap", "cashMin", "maxTotalLoss", "maxSingleEquity", "maxSingleOption"].forEach((key) => {
+      ["capital", "equityCap", "optionsCap", "cashMin", "maxTotalLoss", "maxSingleEquity", "maxSingleOption", "timelineMonths", "eventTapeIntensity"].forEach((key) => {
         if (Number.isFinite(Number(parsed.portfolio[key]))) state.portfolio[key] = Number(parsed.portfolio[key]);
       });
       if (parsed.portfolio.riskProfile) state.portfolio.riskProfile = String(parsed.portfolio.riskProfile);
       if (parsed.portfolio.targetReturn) state.portfolio.targetReturn = String(parsed.portfolio.targetReturn);
+      if (parsed.portfolio.capAppetite) state.portfolio.capAppetite = String(parsed.portfolio.capAppetite);
     }
     if (parsed.selectedSymbol) state.selectedSymbol = parsed.selectedSymbol;
     if (Array.isArray(parsed.collabNotes)) {
@@ -81,6 +82,7 @@ function loadScenarioFromHash() {
 }
 
 function recalculate() {
+  normalizePortfolioSleeves();
   const probabilities = scenarioProbabilities();
   const ranked = state.data.universe
     .map((item) => scoreInstrument(item, probabilities))
@@ -128,7 +130,10 @@ function scoreInstrument(item, probabilities) {
     item.conviction * 0.38 +
     item.convexity * 0.28 * tilt.convexity +
     item.liquidity * 0.12 * tilt.liquidity +
-    targetReturnBoost(item, adjustedBear, adjustedBase, adjustedBull) -
+    targetReturnBoost(item, adjustedBear, adjustedBase, adjustedBull) +
+    timelineBoost(item) +
+    capAppetiteBoost(item) +
+    eventTapeBoost(item) -
     riskPenalty * tilt.valuationPenalty -
     downside * 18 * tilt.bearPenalty;
   const stressScore = clamp(100 - item.valuationRisk * 0.35 - Math.max(0, -factorImpact) * 0.9 - downside * 40, 0, 100);
@@ -324,6 +329,17 @@ function renderControls() {
           <label class="input-field"><span>Capital</span><input id="capitalInput" type="number" min="1000" step="1000" value="${state.portfolio.capital}"></label>
           <label class="input-field"><span>Equity %</span><input id="equityInput" type="number" min="0" max="100" step="1" value="${state.portfolio.equityCap}"></label>
           <label class="input-field"><span>Options %</span><input id="optionsInput" type="number" min="0" max="100" step="1" value="${state.portfolio.optionsCap}"></label>
+          <label class="input-field"><span>Cap appetite</span><select id="capAppetiteInput">${capAppetiteOptions().map((option) => `<option value="${option.id}" ${option.id === state.portfolio.capAppetite ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}</select></label>
+        </div>
+        <div class="timeline-control">
+          <div class="slider-label"><strong>Investment timeline</strong><output>${escapeHtml(formatTimelineMonths(state.portfolio.timelineMonths))}</output></div>
+          <input id="timelineInput" type="range" min="0" max="60" step="1" value="${state.portfolio.timelineMonths}" aria-label="Investment timeline in months">
+          <div class="slider-help"><span>0DTE / tape</span><span>3-5 yr structural</span></div>
+        </div>
+        <div class="timeline-control">
+          <div class="slider-label"><strong>0DTE / event-tape intensity</strong><output>${state.portfolio.eventTapeIntensity}</output></div>
+          <input id="eventTapeInput" type="range" min="0" max="100" step="5" value="${state.portfolio.eventTapeIntensity}" aria-label="0DTE and event-tape intensity">
+          <div class="slider-help"><span>Ignore</span><span>Aggressive secondary sleeve</span></div>
         </div>
         <div class="slider-group">
           ${state.data.scenarioFactors.map((factor) => `
@@ -355,6 +371,7 @@ function renderMetrics() {
 
 function renderActiveTab() {
   if (state.activeTab === "Landscape") return renderLandscape();
+  if (state.activeTab === "Timeline") return renderTimeline();
   if (state.activeTab === "Options Ladder") return renderOptionsLadder();
   if (state.activeTab === "Event Radar") return renderEventRadar();
   if (state.activeTab === "Idea Board") return renderIdeaBoard();
@@ -423,6 +440,76 @@ function renderLandscape() {
   `;
 }
 
+function renderTimeline() {
+  const active = activeTimelineHorizon();
+  const horizonRows = state.ranked
+    .map((item) => ({ item, score: timelineIdeaScore(item) }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 10);
+  return `
+    <section class="tab-panel">
+      <section class="panel narrative">
+        <h2>Editable investment timeline</h2>
+        <p>The same AI thesis needs different instruments at different durations. Move the timeline slider in Scenario Controls, or click a segment below, to shift the ranker toward event tape, earnings catalysts, thesis-build windows, or multi-year structural compounding.</p>
+      </section>
+      <section class="panel">
+        <div class="timeline-band">
+          ${state.data.timelineHorizons.map((horizon) => `
+            <button class="timeline-segment ${horizon.id === active.id ? "active" : ""}" type="button" data-set-timeline="${horizon.months}">
+              <strong>${escapeHtml(horizon.label)}</strong>
+              <span>${escapeHtml(formatTimelineMonths(horizon.months))}</span>
+            </button>
+          `).join("")}
+        </div>
+      </section>
+      <section class="two-col">
+        <section class="panel">
+          <div class="panel-header">
+            <h2>${escapeHtml(active.label)}</h2>
+            <small>${escapeHtml(formatTimelineMonths(state.portfolio.timelineMonths))}</small>
+          </div>
+          <div class="timeline-detail">
+            <p>${escapeHtml(active.summary)}</p>
+            <p><strong>Best fit:</strong> ${active.fit.map((symbol) => `<button class="ticker-chip" data-select="${symbol}" type="button">${symbol}</button>`).join("")}</p>
+            <p><strong>Avoid:</strong> ${escapeHtml(active.avoid)}</p>
+            <p class="footer-note">Sources: ${sourceLinks(active.sourceIds)}</p>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel-header">
+            <h2>Market-cap aperture</h2>
+            <small>${escapeHtml(capAppetiteLabel(state.portfolio.capAppetite))}</small>
+          </div>
+          <div class="timeline-detail">
+            <p>Cap size is a ranker input, not an exclusion. Jumbo names usually fit 0DTE/1-2DTE liquidity; mid/small names usually fit 3-36 month rerating; microcaps belong in the scout lane unless liquidity and source quality are proven.</p>
+            <div class="cap-grid">
+              ${capAppetiteOptions().map((option) => `<button class="cap-button ${option.id === state.portfolio.capAppetite ? "active" : ""}" type="button" data-cap-appetite="${option.id}">${escapeHtml(option.label)}</button>`).join("")}
+            </div>
+          </div>
+        </section>
+      </section>
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Ideas Matched To This Timeline</h2>
+          <small>${horizonRows.length} ranked</small>
+        </div>
+        <div class="timeline-idea-grid">
+          ${horizonRows.map(({ item, score }) => `
+            <article class="timeline-idea selectable-card" data-select="${item.symbol}">
+              <header>
+                <div><h3>${item.symbol} · ${escapeHtml(item.company)}</h3><p>${escapeHtml(capTierLabel(item))} · ${escapeHtml(item.bucket)} · ${escapeHtml(item.layer)}</p></div>
+                <span class="tag ${score > 80 ? "good" : score > 62 ? "warn" : ""}">${Math.round(score)}</span>
+              </header>
+              <p>${escapeHtml(timelineReason(item))}</p>
+            </article>
+          `).join("")}
+        </div>
+      </section>
+      ${renderEventTapePanel()}
+    </section>
+  `;
+}
+
 function renderOptionsLadder() {
   const optionRows = state.ranked
     .filter((item) => item.optionsLiquidity >= 48 && item.convexity >= 58)
@@ -469,6 +556,7 @@ function renderEventRadar() {
       <section class="event-grid">
         ${state.data.eventRadar.map((event) => renderEventCard(event)).join("")}
       </section>
+      ${renderEventTapePanel()}
       <section class="panel">
         <div class="panel-header">
           <h2>Return Target Playbooks</h2>
@@ -486,6 +574,31 @@ function renderEventRadar() {
           `).join("")}
         </div>
       </section>
+    </section>
+  `;
+}
+
+function renderEventTapePanel() {
+  return `
+    <section class="panel">
+      <div class="panel-header">
+        <h2>0DTE / 1-2DTE Public Event Tape</h2>
+        <small>Secondary sleeve · intensity ${state.portfolio.eventTapeIntensity}/100</small>
+      </div>
+      <div class="event-tape-grid">
+        ${state.data.eventTapeCandidates.map((candidate) => `
+          <article class="event-tape-card">
+            <header>
+              <div><h3>${escapeHtml(candidate.label)}</h3><p>${escapeHtml(candidate.duration)} · ${candidate.instruments.map((symbol) => `<span class="tag">${escapeHtml(symbol)}</span>`).join(" ")}</p></div>
+              <span class="tag danger">defined risk</span>
+            </header>
+            <p><strong>Signals:</strong> ${escapeHtml(candidate.signals.join("; "))}</p>
+            <p><strong>Structure:</strong> ${escapeHtml(candidate.structure)}</p>
+            <p><strong>Guardrail:</strong> ${escapeHtml(candidate.guardrail)}</p>
+            <p class="footer-note">Sources: ${sourceLinks(candidate.sources)}</p>
+          </article>
+        `).join("")}
+      </div>
     </section>
   `;
 }
@@ -773,6 +886,7 @@ function rankedTable(rows, includeLayer = false) {
             <th>Bull</th>
             <th>Convexity</th>
             <th>Risk</th>
+            <th>Cap</th>
             <th>Price</th>
           </tr>
         </thead>
@@ -787,6 +901,7 @@ function rankedTable(rows, includeLayer = false) {
               <td>${formatMoic(item.adjustedMoic.bull)}</td>
               <td>${scoreBar(item.convexity)}</td>
               <td><span class="tag ${item.valuationRisk > 78 ? "danger" : item.valuationRisk > 65 ? "warn" : "good"}">${item.valuationRisk}</span></td>
+              <td><span class="tag">${escapeHtml(capTierLabel(item))}</span></td>
               <td>${formatMoney(item.price)} <span class="footer-note">${escapeHtml(item.priceQuality)}</span></td>
             </tr>
           `).join("")}
@@ -869,18 +984,30 @@ function bindEvents() {
       render();
     });
   });
+  document.querySelectorAll("[data-set-timeline]").forEach((button) => {
+    button.addEventListener("click", () => updatePortfolio("timelineMonths", Number(button.dataset.setTimeline)));
+  });
+  document.querySelectorAll("[data-cap-appetite]").forEach((button) => {
+    button.addEventListener("click", () => updatePortfolio("capAppetite", button.dataset.capAppetite));
+  });
   const capital = document.getElementById("capitalInput");
   const equity = document.getElementById("equityInput");
   const options = document.getElementById("optionsInput");
   const riskProfile = document.getElementById("riskProfileInput");
   const targetReturn = document.getElementById("targetReturnInput");
   const maxLoss = document.getElementById("maxLossInput");
+  const timeline = document.getElementById("timelineInput");
+  const eventTape = document.getElementById("eventTapeInput");
+  const capAppetite = document.getElementById("capAppetiteInput");
   if (capital) capital.addEventListener("change", () => updatePortfolio("capital", clamp(Number(capital.value), 1000, 100000000)));
-  if (equity) equity.addEventListener("change", () => updatePortfolio("equityCap", clamp(Number(equity.value), 0, 100)));
-  if (options) options.addEventListener("change", () => updatePortfolio("optionsCap", clamp(Number(options.value), 0, 100)));
+  if (equity) equity.addEventListener("change", () => updateSleeve("equityCap", Number(equity.value)));
+  if (options) options.addEventListener("change", () => updateSleeve("optionsCap", Number(options.value)));
   if (riskProfile) riskProfile.addEventListener("change", () => applyRiskProfile(riskProfile.value));
   if (targetReturn) targetReturn.addEventListener("change", () => updatePortfolio("targetReturn", targetReturn.value));
-  if (maxLoss) maxLoss.addEventListener("change", () => updatePortfolio("maxTotalLoss", clamp(Number(maxLoss.value), 0, 100)));
+  if (maxLoss) maxLoss.addEventListener("change", () => updateMaxPremiumLoss(Number(maxLoss.value)));
+  if (timeline) timeline.addEventListener("input", () => updatePortfolio("timelineMonths", Number(timeline.value)));
+  if (eventTape) eventTape.addEventListener("input", () => updatePortfolio("eventTapeIntensity", clamp(Number(eventTape.value), 0, 100)));
+  if (capAppetite) capAppetite.addEventListener("change", () => updatePortfolio("capAppetite", capAppetite.value));
 
   document.getElementById("copyScenario")?.addEventListener("click", copyScenarioLink);
   document.getElementById("exportScenario")?.addEventListener("click", exportScenario);
@@ -901,6 +1028,46 @@ function updatePortfolio(key, value) {
   state.portfolio[key] = value;
   recalculate();
   render();
+}
+
+function updateSleeve(key, value) {
+  const cash = clamp(Number(state.portfolio.cashMin) || 0, 0, 100);
+  const available = Math.max(0, 100 - cash);
+  const next = clamp(Number(value), 0, available);
+  if (key === "optionsCap") {
+    state.portfolio.optionsCap = Math.min(next, Number(state.portfolio.maxTotalLoss) || 100);
+    state.portfolio.equityCap = Math.max(0, 100 - cash - state.portfolio.optionsCap);
+  } else if (key === "equityCap") {
+    state.portfolio.equityCap = next;
+    state.portfolio.optionsCap = Math.max(0, 100 - cash - state.portfolio.equityCap);
+    state.portfolio.optionsCap = Math.min(state.portfolio.optionsCap, Number(state.portfolio.maxTotalLoss) || 100);
+    state.portfolio.equityCap = Math.max(0, 100 - cash - state.portfolio.optionsCap);
+  }
+  recalculate();
+  render();
+}
+
+function updateMaxPremiumLoss(value) {
+  state.portfolio.maxTotalLoss = clamp(Number(value), 0, 100);
+  if (Number(state.portfolio.optionsCap) > state.portfolio.maxTotalLoss) {
+    state.portfolio.optionsCap = state.portfolio.maxTotalLoss;
+    state.portfolio.equityCap = Math.max(0, 100 - (Number(state.portfolio.cashMin) || 0) - state.portfolio.optionsCap);
+  }
+  recalculate();
+  render();
+}
+
+function normalizePortfolioSleeves() {
+  const cash = clamp(Number(state.portfolio.cashMin) || 0, 0, 100);
+  const maxLoss = clamp(Number(state.portfolio.maxTotalLoss) || 100, 0, 100);
+  const options = clamp(Number(state.portfolio.optionsCap) || 0, 0, Math.min(100 - cash, maxLoss));
+  const equity = Math.max(0, 100 - cash - options);
+  state.portfolio.cashMin = cash;
+  state.portfolio.optionsCap = roundPercent(options);
+  state.portfolio.equityCap = roundPercent(equity);
+  state.portfolio.timelineMonths = clamp(Number(state.portfolio.timelineMonths) || 0, 0, 60);
+  state.portfolio.eventTapeIntensity = clamp(Number(state.portfolio.eventTapeIntensity) || 0, 0, 100);
+  if (!capAppetiteOptions().some((option) => option.id === state.portfolio.capAppetite)) state.portfolio.capAppetite = "all";
 }
 
 function applyRiskProfile(profileId) {
@@ -945,11 +1112,12 @@ function importScenario(event) {
         });
       }
       if (parsed.portfolio) {
-        ["capital", "equityCap", "optionsCap", "cashMin", "maxTotalLoss", "maxSingleEquity", "maxSingleOption"].forEach((key) => {
+        ["capital", "equityCap", "optionsCap", "cashMin", "maxTotalLoss", "maxSingleEquity", "maxSingleOption", "timelineMonths", "eventTapeIntensity"].forEach((key) => {
           if (Number.isFinite(Number(parsed.portfolio[key]))) state.portfolio[key] = Number(parsed.portfolio[key]);
         });
         if (parsed.portfolio.riskProfile) state.portfolio.riskProfile = String(parsed.portfolio.riskProfile);
         if (parsed.portfolio.targetReturn) state.portfolio.targetReturn = String(parsed.portfolio.targetReturn);
+        if (parsed.portfolio.capAppetite) state.portfolio.capAppetite = String(parsed.portfolio.capAppetite);
       }
       state.selectedSymbol = parsed.selectedSymbol || state.selectedSymbol;
       if (Array.isArray(parsed.collabNotes)) {
@@ -1114,6 +1282,124 @@ function targetReturnBoost(item, bear, base, bull) {
   return base * 8 + item.liquidity * 0.12 - item.valuationRisk * 0.08;
 }
 
+function timelineBoost(item) {
+  const months = Number(state.portfolio.timelineMonths) || 0;
+  const tapeNames = new Set(["NVDA", "TSM", "AVGO", "ASML", "AMAT", "QQQ", "SPY", "SMH"]);
+  if (months <= 0.1) {
+    return (item.optionsLiquidity * 0.18 + item.liquidity * 0.13 + item.volatility * 0.14 + (tapeNames.has(item.symbol) ? 14 : 0)) - item.valuationRisk * 0.04;
+  }
+  if (months <= 1) {
+    return item.optionsLiquidity * 0.13 + item.volatility * 0.12 + item.liquidity * 0.08 + shortCatalystScore(item);
+  }
+  if (months <= 3) {
+    return item.convexity * 0.12 + shortCatalystScore(item) + (item.optionsLiquidity > 60 ? 5 : 0);
+  }
+  if (months <= 12) {
+    return item.conviction * 0.1 + item.convexity * 0.08 + (item.pdfBasket ? 5 : 0);
+  }
+  if (months <= 36) {
+    return item.conviction * 0.12 + item.convexity * 0.1 + Math.max(0, item.moic.bull - item.moic.base) * 5;
+  }
+  return longDurationScore(item);
+}
+
+function timelineIdeaScore(item) {
+  return clamp(45 + timelineBoost(item) + capAppetiteBoost(item) * 0.7 + eventTapeBoost(item) * 0.4, 0, 100);
+}
+
+function timelineReason(item) {
+  const months = Number(state.portfolio.timelineMonths) || 0;
+  if (months <= 0.1) return `${item.symbol} fits the tape lane because liquidity, options depth, and event sensitivity matter more than long-cycle upside over same-day windows.`;
+  if (months <= 1) return `${item.symbol} fits a 1-4 week catalyst window when earnings, policy, social tape, or abnormal options activity can reprice expectations quickly.`;
+  if (months <= 3) return `${item.symbol} fits a 1-3 month rerating if architecture evidence, customer data, or capex commentary moves before full-year estimates adjust.`;
+  if (months <= 12) return `${item.symbol} fits a 6-12 month build where backlog, design wins, and supply-chain bottlenecks can show through multiple quarters.`;
+  if (months <= 36) return `${item.symbol} fits the core AI bottleneck window where thesis validation and multiple expansion can compound over 18-36 months.`;
+  return `${item.symbol} fits a structural 3-5 year lens when power, grid, reshoring, or deep supply-chain adoption matters more than a single quarter.`;
+}
+
+function shortCatalystScore(item) {
+  const words = `${item.catalysts.join(" ")} ${item.thesis}`.toLowerCase();
+  let score = 0;
+  if (words.includes("earnings") || words.includes("revenue")) score += 5;
+  if (words.includes("capex") || words.includes("customer") || words.includes("design")) score += 6;
+  if (words.includes("export") || words.includes("china") || words.includes("policy")) score += 4;
+  if (["CRDO", "ALAB", "NVDA", "TSM", "AVGO", "ASML", "VRT"].includes(item.symbol)) score += 5;
+  return score;
+}
+
+function longDurationScore(item) {
+  const structuralBuckets = new Set(["Electrical", "Grid", "Power generation", "Uranium", "Outsourced assembly/test", "Test"]);
+  const layerText = `${item.bucket} ${item.layer}`.toLowerCase();
+  let score = item.conviction * 0.12 + item.liquidity * 0.05;
+  if (structuralBuckets.has(item.bucket)) score += 10;
+  if (layerText.includes("power") || layerText.includes("grid") || layerText.includes("assembly") || layerText.includes("test")) score += 6;
+  return score;
+}
+
+function eventTapeBoost(item) {
+  const intensity = clamp(Number(state.portfolio.eventTapeIntensity) || 0, 0, 100) / 100;
+  if (!intensity) return 0;
+  const tapeSymbols = new Set(["NVDA", "TSM", "AVGO", "ASML", "AMAT", "CRDO", "ALAB", "VRT", "MRVL", "ANET"]);
+  const raw = item.optionsLiquidity * 0.13 + item.liquidity * 0.08 + item.volatility * 0.12 + (tapeSymbols.has(item.symbol) ? 12 : 0) - Math.max(0, 45 - item.liquidity) * 0.25;
+  return raw * intensity;
+}
+
+function capAppetiteBoost(item) {
+  const appetite = state.portfolio.capAppetite || "all";
+  const tier = capTier(item);
+  if (appetite === "jumbo") return tier === "jumbo" ? 14 : tier === "large" ? 7 : tier === "mid" ? -2 : -10;
+  if (appetite === "largeMid") return tier === "large" || tier === "mid" ? 10 : tier === "jumbo" ? 4 : 3;
+  if (appetite === "smallMicro") return tier === "micro" ? 16 : tier === "small" ? 13 : tier === "mid" ? 7 : -8;
+  return 0;
+}
+
+function activeTimelineHorizon() {
+  const months = Number(state.portfolio.timelineMonths) || 0;
+  const horizons = state.data.timelineHorizons || [];
+  if (months <= 0) return horizons.find((item) => item.id === "zero-two-day") || horizons[0];
+  if (months <= 1) return horizons.find((item) => item.id === "one-four-week") || horizons[0];
+  if (months <= 3) return horizons.find((item) => item.id === "one-three-month") || horizons[0];
+  if (months <= 12) return horizons.find((item) => item.id === "six-twelve-month") || horizons[0];
+  if (months <= 36) return horizons.find((item) => item.id === "eighteen-thirtysix-month") || horizons[0];
+  return horizons.find((item) => item.id === "three-five-year") || horizons[horizons.length - 1];
+}
+
+function capTier(item) {
+  const map = {
+    NVDA: "jumbo", AVGO: "jumbo", TSM: "jumbo", ASML: "jumbo",
+    AMAT: "large", ANET: "large", ETN: "large", CEG: "large", VRT: "large", MRVL: "large", VST: "large",
+    PWR: "mid", TER: "mid", COHR: "mid", CLS: "mid", RMBS: "mid", ONTO: "mid", FORM: "mid", ALAB: "mid", CRDO: "mid", MOD: "mid", AMKR: "mid", CCJ: "mid", CAMT: "mid", BESIY: "mid",
+    POET: "micro", ATOM: "micro", LWLG: "micro"
+  };
+  return map[item.symbol] || "small";
+}
+
+function capTierLabel(item) {
+  const labels = { jumbo: "Jumbo", large: "Large", mid: "Mid", small: "Small", micro: "Micro" };
+  return labels[capTier(item)] || "Small";
+}
+
+function capAppetiteOptions() {
+  return [
+    { id: "all", label: "Jumbo to micro" },
+    { id: "jumbo", label: "Jumbo/liquid only" },
+    { id: "largeMid", label: "Large + mid cap" },
+    { id: "smallMicro", label: "Small/micro scout" }
+  ];
+}
+
+function capAppetiteLabel(value) {
+  return capAppetiteOptions().find((option) => option.id === value)?.label || "Jumbo to micro";
+}
+
+function sourceLinks(ids = []) {
+  return ids
+    .map((id) => state.data.sources.find((source) => source.id === id))
+    .filter(Boolean)
+    .map((source) => source.url ? `<a href="${escapeAttr(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.title)}</a>` : escapeHtml(source.title))
+    .join(" · ");
+}
+
 function heatColor(value) {
   if (value >= 2) return { bg: "#cde9d6", fg: "#183d27" };
   if (value >= 0.6) return { bg: "#e5f3e9", fg: "#23643e" };
@@ -1143,6 +1429,10 @@ function roundToIncrement(value) {
   return Math.round(value / 10) * 10;
 }
 
+function roundPercent(value) {
+  return Math.round(value * 10) / 10;
+}
+
 function groupBy(rows, key) {
   return rows.reduce((memo, item) => {
     const value = item[key] || "Other";
@@ -1170,6 +1460,16 @@ function formatPercent(value) {
 
 function formatMoic(value) {
   return `${value.toFixed(2)}x`;
+}
+
+function formatTimelineMonths(value) {
+  const months = Number(value) || 0;
+  if (months <= 0.1) return "0DTE";
+  if (months < 1) return "1-4 wk";
+  if (months === 1) return "1 mo";
+  if (months < 12) return `${Math.round(months)} mo`;
+  if (months === 12) return "12 mo";
+  return `${Math.round(months / 12 * 10) / 10} yr`;
 }
 
 function formatDate(value) {

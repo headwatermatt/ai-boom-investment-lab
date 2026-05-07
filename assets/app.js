@@ -7,7 +7,8 @@ const state = {
   ranked: [],
   allocations: [],
   results: null,
-  collabNotes: []
+  collabNotes: [],
+  inspectorOpen: true
 };
 
 const tabs = ["Landscape", "Optimizer", "Timeline", "Options Ladder", "Event Radar", "Idea Board", "Sentiment", "Risk Map", "Source Ledger"];
@@ -150,7 +151,7 @@ function scoreInstrument(item, probabilities) {
 function buildAllocations(ranked) {
   const totalCap = Math.max(1, Number(state.portfolio.equityCap) + Number(state.portfolio.optionsCap) + Number(state.portfolio.cashMin));
   const rawOptionsCap = totalCap > 100 ? state.portfolio.optionsCap * (100 / totalCap) : state.portfolio.optionsCap;
-  const optionsCap = Math.min(rawOptionsCap, Number(state.portfolio.maxTotalLoss) || 100);
+  const optionsCap = Math.min(rawOptionsCap, getMaxPremiumLoss());
   const equityCap = totalCap > 100 ? state.portfolio.equityCap * (100 / totalCap) : state.portfolio.equityCap;
   const cashMin = totalCap > 100 ? state.portfolio.cashMin * (100 / totalCap) : state.portfolio.cashMin;
 
@@ -289,22 +290,31 @@ function render() {
         ${tabs.map((tab) => `<button class="tab ${tab === state.activeTab ? "active" : ""}" data-tab="${tab}">${tab}</button>`).join("")}
       </nav>
       <div class="top-actions">
-        <button class="ghost-action" id="copyScenario">Copy collaboration link</button>
-        <button class="ghost-action" id="exportScenario">Export JSON</button>
+        <button class="ghost-action" id="toggleInspector" title="${state.inspectorOpen ? "Hide proxy inspector" : "Show proxy inspector"}">${state.inspectorOpen ? "Hide detail" : "Show detail"}</button>
+        <button class="ghost-action" id="copyScenario" title="Copy collaboration link">Copy link</button>
+        <button class="ghost-action" id="exportScenario" title="Export scenario JSON">Export</button>
         <button class="primary-action" id="importScenario">Import</button>
         <input class="hidden-file" id="importFile" type="file" accept="application/json,.json">
       </div>
     </header>
-    <main class="grid-shell">
+    <main class="grid-shell ${state.inspectorOpen ? "" : "inspector-closed"}">
       ${renderControls()}
       <section class="workspace">
         ${renderMetrics()}
         ${renderActiveTab()}
       </section>
-      ${renderInspector()}
+      ${state.inspectorOpen ? renderInspector() : ""}
     </main>
   `;
   bindEvents();
+}
+
+function renderLiveSections() {
+  const workspace = document.querySelector(".workspace");
+  if (workspace) workspace.innerHTML = `${renderMetrics()}${renderActiveTab()}`;
+  const inspector = document.querySelector(".inspector");
+  if (state.inspectorOpen && inspector) inspector.outerHTML = renderInspector();
+  bindDynamicEvents();
 }
 
 function renderControls() {
@@ -825,7 +835,10 @@ function renderInspector() {
     <aside class="panel inspector">
       <div class="panel-header">
         <h2>Inspector</h2>
-        <small>${selected.priceQuality}</small>
+        <div class="inspector-actions">
+          <small>${selected.priceQuality}</small>
+          <button class="icon-button" id="closeInspector" type="button" aria-label="Hide proxy inspector">X</button>
+        </div>
       </div>
       <div class="inspector-body">
         <div class="selected-title">
@@ -973,23 +986,12 @@ function bindEvents() {
   document.querySelectorAll("[data-factor]").forEach((input) => {
     input.addEventListener("input", () => {
       state.factors[input.dataset.factor] = Number(input.value);
+      updateSliderOutput(input, input.value);
       recalculate();
-      render();
+      renderLiveSections();
     });
   });
-  document.querySelectorAll("[data-select]").forEach((row) => {
-    row.addEventListener("click", () => {
-      state.selectedSymbol = row.dataset.select;
-      recalculate();
-      render();
-    });
-  });
-  document.querySelectorAll("[data-set-timeline]").forEach((button) => {
-    button.addEventListener("click", () => updatePortfolio("timelineMonths", Number(button.dataset.setTimeline)));
-  });
-  document.querySelectorAll("[data-cap-appetite]").forEach((button) => {
-    button.addEventListener("click", () => updatePortfolio("capAppetite", button.dataset.capAppetite));
-  });
+  bindDynamicEvents();
   const capital = document.getElementById("capitalInput");
   const equity = document.getElementById("equityInput");
   const options = document.getElementById("optionsInput");
@@ -1005,23 +1007,65 @@ function bindEvents() {
   if (riskProfile) riskProfile.addEventListener("change", () => applyRiskProfile(riskProfile.value));
   if (targetReturn) targetReturn.addEventListener("change", () => updatePortfolio("targetReturn", targetReturn.value));
   if (maxLoss) maxLoss.addEventListener("change", () => updateMaxPremiumLoss(Number(maxLoss.value)));
-  if (timeline) timeline.addEventListener("input", () => updatePortfolio("timelineMonths", Number(timeline.value)));
-  if (eventTape) eventTape.addEventListener("input", () => updatePortfolio("eventTapeIntensity", clamp(Number(eventTape.value), 0, 100)));
+  if (timeline) {
+    timeline.addEventListener("input", () => {
+      state.portfolio.timelineMonths = Number(timeline.value);
+      updateSliderOutput(timeline, formatTimelineMonths(state.portfolio.timelineMonths));
+      recalculate();
+      renderLiveSections();
+    });
+  }
+  if (eventTape) {
+    eventTape.addEventListener("input", () => {
+      state.portfolio.eventTapeIntensity = clamp(Number(eventTape.value), 0, 100);
+      updateSliderOutput(eventTape, state.portfolio.eventTapeIntensity);
+      recalculate();
+      renderLiveSections();
+    });
+  }
   if (capAppetite) capAppetite.addEventListener("change", () => updatePortfolio("capAppetite", capAppetite.value));
 
+  document.getElementById("toggleInspector")?.addEventListener("click", toggleInspector);
   document.getElementById("copyScenario")?.addEventListener("click", copyScenarioLink);
   document.getElementById("exportScenario")?.addEventListener("click", exportScenario);
   document.getElementById("importScenario")?.addEventListener("click", () => document.getElementById("importFile").click());
   document.getElementById("importFile")?.addEventListener("change", importScenario);
+}
+
+function bindDynamicEvents() {
+  document.querySelectorAll("[data-select]").forEach((row) => {
+    row.addEventListener("click", () => {
+      state.selectedSymbol = row.dataset.select;
+      recalculate();
+      render();
+    });
+  });
+  document.querySelectorAll("[data-set-timeline]").forEach((button) => {
+    button.addEventListener("click", () => updatePortfolio("timelineMonths", Number(button.dataset.setTimeline)));
+  });
+  document.querySelectorAll("[data-cap-appetite]").forEach((button) => {
+    button.addEventListener("click", () => updatePortfolio("capAppetite", button.dataset.capAppetite));
+  });
   document.getElementById("ideaForm")?.addEventListener("submit", addIdea);
   document.getElementById("addIdeaButton")?.addEventListener("click", addIdea);
   document.getElementById("clearIdeas")?.addEventListener("click", clearIdeas);
+  document.getElementById("closeInspector")?.addEventListener("click", toggleInspector);
   document.querySelectorAll("[data-delete-note]").forEach((button) => {
     button.addEventListener("click", (event) => {
       event.stopPropagation();
       deleteIdea(button.dataset.deleteNote);
     });
   });
+}
+
+function updateSliderOutput(input, value) {
+  const output = input.closest(".slider-row, .timeline-control")?.querySelector("output");
+  if (output) output.textContent = value;
+}
+
+function toggleInspector() {
+  state.inspectorOpen = !state.inspectorOpen;
+  render();
 }
 
 function updatePortfolio(key, value) {
@@ -1035,12 +1079,12 @@ function updateSleeve(key, value) {
   const available = Math.max(0, 100 - cash);
   const next = clamp(Number(value), 0, available);
   if (key === "optionsCap") {
-    state.portfolio.optionsCap = Math.min(next, Number(state.portfolio.maxTotalLoss) || 100);
+    state.portfolio.optionsCap = Math.min(next, getMaxPremiumLoss());
     state.portfolio.equityCap = Math.max(0, 100 - cash - state.portfolio.optionsCap);
   } else if (key === "equityCap") {
     state.portfolio.equityCap = next;
     state.portfolio.optionsCap = Math.max(0, 100 - cash - state.portfolio.equityCap);
-    state.portfolio.optionsCap = Math.min(state.portfolio.optionsCap, Number(state.portfolio.maxTotalLoss) || 100);
+    state.portfolio.optionsCap = Math.min(state.portfolio.optionsCap, getMaxPremiumLoss());
     state.portfolio.equityCap = Math.max(0, 100 - cash - state.portfolio.optionsCap);
   }
   recalculate();
@@ -1059,7 +1103,7 @@ function updateMaxPremiumLoss(value) {
 
 function normalizePortfolioSleeves() {
   const cash = clamp(Number(state.portfolio.cashMin) || 0, 0, 100);
-  const maxLoss = clamp(Number(state.portfolio.maxTotalLoss) || 100, 0, 100);
+  const maxLoss = getMaxPremiumLoss();
   const options = clamp(Number(state.portfolio.optionsCap) || 0, 0, Math.min(100 - cash, maxLoss));
   const equity = Math.max(0, 100 - cash - options);
   state.portfolio.cashMin = cash;
@@ -1068,6 +1112,11 @@ function normalizePortfolioSleeves() {
   state.portfolio.timelineMonths = clamp(Number(state.portfolio.timelineMonths) || 0, 0, 60);
   state.portfolio.eventTapeIntensity = clamp(Number(state.portfolio.eventTapeIntensity) || 0, 0, 100);
   if (!capAppetiteOptions().some((option) => option.id === state.portfolio.capAppetite)) state.portfolio.capAppetite = "all";
+}
+
+function getMaxPremiumLoss() {
+  const value = Number(state.portfolio.maxTotalLoss);
+  return Number.isFinite(value) ? clamp(value, 0, 100) : 100;
 }
 
 function applyRiskProfile(profileId) {

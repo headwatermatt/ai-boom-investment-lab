@@ -7,7 +7,9 @@ const chromePath = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome
 const targetUrl = process.env.AI_LAB_SMOKE_URL || "http://127.0.0.1:4173/";
 const viewports = [
   { name: "desktop", width: 1440, height: 900, port: 9333 },
-  { name: "mobile", width: 390, height: 844, port: 9334 }
+  { name: "laptop", width: 1280, height: 800, port: 9334 },
+  { name: "mobile", width: 390, height: 844, port: 9335 },
+  { name: "large-mobile", width: 430, height: 932, port: 9336 }
 ];
 
 for (const viewport of viewports) {
@@ -41,6 +43,13 @@ async function runViewport({ name, width, height, port }) {
       document.querySelector('#optionsInput').dispatchEvent(new Event('change', { bubbles: true }));
       const coupledAllocation = document.querySelector('#equityInput')?.value === '35' &&
         document.querySelector('#optionsInput')?.value === '60';
+      document.querySelector('#closeInspector')?.click();
+      const inspectorClosed = !document.querySelector('.inspector') &&
+        document.querySelector('.grid-shell')?.classList.contains('inspector-closed') &&
+        document.body.textContent.includes('Show detail');
+      document.querySelector('#toggleInspector')?.click();
+      const inspectorReopened = !!document.querySelector('.inspector') &&
+        document.body.textContent.includes('Hide detail');
       document.querySelector('[data-tab="Timeline"]').click();
       const timelineVisible = document.body.textContent.includes('Editable investment timeline');
       document.querySelector('[data-set-timeline="0.07"]').click();
@@ -55,6 +64,10 @@ async function runViewport({ name, width, height, port }) {
       document.querySelector('#riskProfileInput').dispatchEvent(new Event('change', { bubbles: true }));
       const survivalVisible = document.body.textContent.includes('Do-not-zero') &&
         document.querySelector('#maxLossInput')?.value === '25';
+      document.querySelector('#maxLossInput').value = '0';
+      document.querySelector('#maxLossInput').dispatchEvent(new Event('change', { bubbles: true }));
+      const zeroPremiumLossHonored = document.querySelector('#optionsInput')?.value === '0' &&
+        document.querySelector('#equityInput')?.value === '85';
       document.querySelector('[data-tab="Idea Board"]').click();
       document.querySelector('#ideaAuthor').value = 'QA';
       document.querySelector('#ideaTrade').value = 'RMBS common plus LEAPS';
@@ -64,24 +77,41 @@ async function runViewport({ name, width, height, port }) {
       const slider = document.querySelector('[data-factor="capex"]');
       slider.value = '20';
       slider.dispatchEvent(new Event('input', { bubbles: true }));
+      const sliderRetained = slider.isConnected && document.querySelector('[data-factor="capex"]') === slider;
+      const hbmSlider = document.querySelector('[data-factor="hbm"]');
+      hbmSlider.value = '80';
+      hbmSlider.dispatchEvent(new Event('input', { bubbles: true }));
+      const secondSliderWorks = hbmSlider.isConnected &&
+        hbmSlider.closest('.slider-row')?.querySelector('output')?.textContent === '80';
       const after = document.querySelector('.metric strong')?.textContent || '';
       document.querySelector('#copyScenario').click();
       const hashOk = location.hash.startsWith('#scenario=');
       const sourceVisible = Array.from(document.querySelectorAll('[data-tab]')).length === 9;
+      const tabClicksWork = Array.from(document.querySelectorAll('[data-tab]')).every((button) => {
+        const tab = button.dataset.tab;
+        button.click();
+        return document.querySelector('.tab.active')?.dataset.tab === tab;
+      });
       return {
         title: document.title,
         before,
         after,
         changed: before !== after,
         coupledAllocation,
+        inspectorClosed,
+        inspectorReopened,
+        sliderRetained,
+        secondSliderWorks,
         timelineVisible,
         zeroDteVisible,
         optionsVisible,
         eventVisible,
         survivalVisible,
+        zeroPremiumLossHonored,
         ideaVisible,
         hashOk,
         sourceVisible,
+        tabClicksWork,
         innerWidth: window.innerWidth,
         scrollWidth: document.documentElement.scrollWidth,
         noHorizontalOverflow: document.documentElement.scrollWidth <= window.innerWidth + 2
@@ -91,14 +121,20 @@ async function runViewport({ name, width, height, port }) {
     assert(smoke.title === "AI Boom Bottleneck Investment Lab", `${name}: wrong title`);
     assert(smoke.optionsVisible, `${name}: options tab did not render`);
     assert(smoke.coupledAllocation, `${name}: options/equity allocation did not rebalance`);
+    assert(smoke.inspectorClosed, `${name}: inspector did not close cleanly`);
+    assert(smoke.inspectorReopened, `${name}: inspector did not reopen cleanly`);
+    assert(smoke.sliderRetained, `${name}: slider DOM was replaced during drag`);
+    assert(smoke.secondSliderWorks, `${name}: second slider did not remain usable after first slider`);
     assert(smoke.timelineVisible, `${name}: timeline tab did not render`);
     assert(smoke.zeroDteVisible, `${name}: 0DTE event tape did not render`);
     assert(smoke.eventVisible, `${name}: event radar did not render`);
     assert(smoke.survivalVisible, `${name}: risk profile did not apply`);
+    assert(smoke.zeroPremiumLossHonored, `${name}: 0% max premium loss did not zero options sleeve`);
     assert(smoke.ideaVisible, `${name}: idea board note did not render`);
     assert(smoke.changed, `${name}: slider did not change metrics`);
     assert(smoke.hashOk, `${name}: scenario hash not created`);
     assert(smoke.sourceVisible, `${name}: tabs missing`);
+    assert(smoke.tabClicksWork, `${name}: one or more tabs did not activate`);
     assert(smoke.noHorizontalOverflow, `${name}: horizontal overflow ${smoke.scrollWidth} > ${smoke.innerWidth}`);
   } finally {
     child.kill("SIGTERM");

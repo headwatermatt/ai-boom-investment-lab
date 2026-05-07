@@ -883,7 +883,8 @@ function renderEarlyMovers() {
                 <span class="tag ${row.unusuallyBullishManagers ? "good" : row.ownershipEvents ? "warn" : ""}">${row.weightedScore}</span>
               </header>
               <div class="early-stats">
-                <span>${row.managers} signals</span>
+                <span>${row.signalCount || row.managers} signals</span>
+                <span>${row.managerCount || row.managerNames.length} managers</span>
                 <span>${row.unusuallyBullishManagers} unusual</span>
                 <span>${row.ownershipEvents} 13D/G</span>
                 <span>${formatMoney(row.totalValueUsd)} 13F</span>

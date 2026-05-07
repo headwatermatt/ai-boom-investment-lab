@@ -224,7 +224,16 @@ function latest13FFilings(rows) {
 }
 
 function latestOwnershipFilings(rows) {
-  const ownershipForms = new Set(["SC 13D", "SC 13D/A", "SC 13G", "SC 13G/A"]);
+  const ownershipForms = new Set([
+    "SC 13D",
+    "SC 13D/A",
+    "SC 13G",
+    "SC 13G/A",
+    "SCHEDULE 13D",
+    "SCHEDULE 13D/A",
+    "SCHEDULE 13G",
+    "SCHEDULE 13G/A"
+  ]);
   const minDate = new Date();
   minDate.setFullYear(minDate.getFullYear() - 3);
   return rows
@@ -376,6 +385,7 @@ function parseSubjectCompany(text) {
 
 function parseOwnershipPercent(text) {
   const patterns = [
+    /<classPercent>\s*(\d{1,2}(?:\.\d+)?)\s*<\/classPercent>/i,
     /PERCENT OF CLASS[^\d%]{0,300}(\d{1,2}(?:\.\d+)?)\s*%/i,
     /percent of the class[^\d%]{0,300}(\d{1,2}(?:\.\d+)?)\s*%/i,
     /(\d{1,2}(?:\.\d+)?)\s*%\s+of\s+(?:the\s+)?(?:class|outstanding|shares)/i
@@ -391,6 +401,7 @@ function parseOwnershipPercent(text) {
 
 function parseBeneficialShares(text) {
   const patterns = [
+    /<reportingPersonBeneficiallyOwnedAggregateNumberOfShares>\s*([\d,.]+)\s*<\/reportingPersonBeneficiallyOwnedAggregateNumberOfShares>/i,
     /AGGREGATE AMOUNT BENEFICIALLY OWNED[^\d]{0,350}([\d,]+)/i,
     /beneficially owned[^\d]{0,200}([\d,]+)\s+(?:shares|ordinary shares|common shares)/i
   ];
@@ -605,7 +616,8 @@ function summarizeSignals(signals) {
       memo[signal.symbol] = {
         symbol: signal.symbol,
         securityName: signal.securityName,
-        managers: 0,
+        signalCount: 0,
+        managerCount: 0,
         unusuallyBullishManagers: 0,
         highConfidenceSignals: 0,
         totalValueUsd: 0,
@@ -619,7 +631,7 @@ function summarizeSignals(signals) {
       };
     }
     const row = memo[signal.symbol];
-    row.managers += 1;
+    row.signalCount += 1;
     row.unusuallyBullishManagers += signal.unusuallyBullish ? 1 : 0;
     row.highConfidenceSignals += signal.confidence >= 75 ? 1 : 0;
     row.totalValueUsd += signal.valueUsd;
@@ -635,11 +647,12 @@ function summarizeSignals(signals) {
   return Object.values(grouped)
     .map((row) => ({
       ...row,
+      managerCount: new Set(row.managerNames).size,
       totalValueUsd: Math.round(row.totalValueUsd),
       totalDeltaUsd: Math.round(row.totalDeltaUsd),
       weightedScore: Math.round(row.weightedScore),
       managerNames: [...new Set(row.managerNames)].slice(0, 8),
-      rationale: `${row.managers} tracked manager signal(s), ${row.unusuallyBullishManagers} unusually bullish, ${row.highConfidenceSignals} high-confidence. Includes ${row.thirteenFSignals} 13F signal(s) and ${row.ownershipEvents} 13D/G event(s). Aggregate matched 13F value ${formatMoney(row.totalValueUsd)}; reported 13F value change ${formatMoney(row.totalDeltaUsd)}.`
+      rationale: `${row.signalCount} tracked signal(s) across ${new Set(row.managerNames).size} manager(s), ${row.unusuallyBullishManagers} unusually bullish, ${row.highConfidenceSignals} high-confidence. Includes ${row.thirteenFSignals} 13F signal(s) and ${row.ownershipEvents} 13D/G event(s). Aggregate matched 13F value ${formatMoney(row.totalValueUsd)}; reported 13F value change ${formatMoney(row.totalDeltaUsd)}.`
     }))
     .sort((a, b) => b.weightedScore - a.weightedScore);
 }

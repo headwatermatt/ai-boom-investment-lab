@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "SEC EDGAR Early Mover Snapshot",
-    "generatedAt": "2026-05-07T19:27:44.337Z",
+    "generatedAt": "2026-05-07T19:46:53.248Z",
     "source": "SEC EDGAR submissions JSON, 13F-HR information tables, and Schedule 13D/13G filings",
     "caveat": "13F data is delayed, long-only for reportable securities, can omit shorts/swaps/non-13F instruments, and does not reveal current intent. Schedule 13D/G filings are more timely ownership disclosures but still do not prove current trading intent. Treat this as a context signal, not a trade instruction."
   },
@@ -21,7 +21,7 @@
       "aiMatchedValueUsd": 11685410764,
       "total13fValueUsd": 39962643007,
       "matchedAiNames": 8,
-      "recentOwnershipFilings": 1,
+      "recentOwnershipFilings": 7,
       "matchedOwnershipSignals": 0
     },
     {
@@ -39,8 +39,8 @@
       "aiMatchedValueUsd": 1519900306,
       "total13fValueUsd": 7820249818,
       "matchedAiNames": 5,
-      "recentOwnershipFilings": 1,
-      "matchedOwnershipSignals": 1
+      "recentOwnershipFilings": 3,
+      "matchedOwnershipSignals": 3
     },
     {
       "id": "duquesne",
@@ -57,7 +57,7 @@
       "aiMatchedValueUsd": 165038,
       "total13fValueUsd": 4494450,
       "matchedAiNames": 1,
-      "recentOwnershipFilings": 1,
+      "recentOwnershipFilings": 3,
       "matchedOwnershipSignals": 0
     },
     {
@@ -75,7 +75,7 @@
       "aiMatchedValueUsd": 879768800,
       "total13fValueUsd": 6925020650,
       "matchedAiNames": 4,
-      "recentOwnershipFilings": 0,
+      "recentOwnershipFilings": 3,
       "matchedOwnershipSignals": 0
     },
     {
@@ -93,7 +93,7 @@
       "aiMatchedValueUsd": 4411133495,
       "total13fValueUsd": 29714313270,
       "matchedAiNames": 4,
-      "recentOwnershipFilings": 7,
+      "recentOwnershipFilings": 10,
       "matchedOwnershipSignals": 0
     },
     {
@@ -111,7 +111,7 @@
       "aiMatchedValueUsd": 464621637,
       "total13fValueUsd": 10702130196,
       "matchedAiNames": 3,
-      "recentOwnershipFilings": 10,
+      "recentOwnershipFilings": 18,
       "matchedOwnershipSignals": 0
     },
     {
@@ -129,7 +129,7 @@
       "aiMatchedValueUsd": 3014538489,
       "total13fValueUsd": 13611137640,
       "matchedAiNames": 4,
-      "recentOwnershipFilings": 8,
+      "recentOwnershipFilings": 13,
       "matchedOwnershipSignals": 0
     },
     {
@@ -165,7 +165,7 @@
       "aiMatchedValueUsd": 0,
       "total13fValueUsd": 57616042,
       "matchedAiNames": 0,
-      "recentOwnershipFilings": 7,
+      "recentOwnershipFilings": 16,
       "matchedOwnershipSignals": 0
     },
     {
@@ -399,6 +399,43 @@
       "informationTableUrl": "https://www.sec.gov/Archives/edgar/data/1569049/000093583626000112/infotable.xml"
     },
     {
+      "filingType": "SCHEDULE 13G/A",
+      "sourceType": "13D/G",
+      "timeSensitivity": "ownership-event",
+      "managerId": "whale-rock",
+      "managerName": "Whale Rock Capital Management",
+      "managerType": "technology hedge fund",
+      "managerTrackRecordScore": 5,
+      "trackRecordRationale": "Curated prior: technology-focused manager known for concentrated public-market software, internet, and semiconductor exposure.",
+      "symbol": "CLS",
+      "securityName": "Celestica",
+      "subjectName": "CELESTICA INC",
+      "latestReportDate": "2025-02-14",
+      "latestFilingDate": "2025-02-14",
+      "priorReportDate": null,
+      "valueUsd": 0,
+      "priorValueUsd": 0,
+      "deltaValueUsd": 0,
+      "deltaPct": null,
+      "portfolioPct": 0,
+      "shares": 5939918,
+      "ownershipPct": 5.1,
+      "newPosition": false,
+      "increased": false,
+      "concentrated": true,
+      "hasCall": false,
+      "hasPut": false,
+      "commonOnly": true,
+      "stance": "unusually bullish 13G disclosure",
+      "unusuallyBullish": true,
+      "signalScore": 87,
+      "confidence": 87,
+      "matchQuality": "subject-company",
+      "rationale": "Whale Rock Capital Management filed SCHEDULE 13G/A, a beneficial ownership disclosure that is generally more timely than a 13F. CLS matched by subject-company. Parsed ownership is approximately 5.1%. Whale Rock Capital Management has a 5/5 curated early-mover prior.",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1387322/000117266125001199/0001172661-25-001199-index.html",
+      "informationTableUrl": "https://www.sec.gov/Archives/edgar/data/1387322/000117266125001199/0001172661-25-001199.txt"
+    },
+    {
       "filingType": "SC 13G",
       "sourceType": "13D/G",
       "timeSensitivity": "ownership-event",
@@ -469,6 +506,43 @@
       "rationale": "Light Street Capital has a 4/5 curated early-mover prior. Position increased by $17.0M (52%) versus the prior matched 13F. AVGO is a concentrated matched 13F position at 7.7% of reported 13F value.",
       "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1569049/000093583626000112/0000935836-26-000112-index.html",
       "informationTableUrl": "https://www.sec.gov/Archives/edgar/data/1569049/000093583626000112/infotable.xml"
+    },
+    {
+      "filingType": "SCHEDULE 13G/A",
+      "sourceType": "13D/G",
+      "timeSensitivity": "ownership-event",
+      "managerId": "whale-rock",
+      "managerName": "Whale Rock Capital Management",
+      "managerType": "technology hedge fund",
+      "managerTrackRecordScore": 5,
+      "trackRecordRationale": "Curated prior: technology-focused manager known for concentrated public-market software, internet, and semiconductor exposure.",
+      "symbol": "CLS",
+      "securityName": "Celestica",
+      "subjectName": "CELESTICA INC",
+      "latestReportDate": "2025-08-14",
+      "latestFilingDate": "2025-08-14",
+      "priorReportDate": null,
+      "valueUsd": 0,
+      "priorValueUsd": 0,
+      "deltaValueUsd": 0,
+      "deltaPct": null,
+      "portfolioPct": 0,
+      "shares": 4639115,
+      "ownershipPct": 4.03,
+      "newPosition": false,
+      "increased": false,
+      "concentrated": false,
+      "hasCall": false,
+      "hasPut": false,
+      "commonOnly": true,
+      "stance": "unusually bullish 13G disclosure",
+      "unusuallyBullish": true,
+      "signalScore": 82,
+      "confidence": 87,
+      "matchQuality": "subject-company",
+      "rationale": "Whale Rock Capital Management filed SCHEDULE 13G/A, a beneficial ownership disclosure that is generally more timely than a 13F. CLS matched by subject-company. Parsed ownership is approximately 4.03%. Whale Rock Capital Management has a 5/5 curated early-mover prior.",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1387322/000117266125003556/0001172661-25-003556-index.html",
+      "informationTableUrl": "https://www.sec.gov/Archives/edgar/data/1387322/000117266125003556/0001172661-25-003556.txt"
     },
     {
       "filingType": "13F-HR",
@@ -1455,7 +1529,8 @@
     {
       "symbol": "TSM",
       "securityName": "Taiwan Semiconductor",
-      "managers": 7,
+      "signalCount": 7,
+      "managerCount": 7,
       "unusuallyBullishManagers": 0,
       "highConfidenceSignals": 7,
       "totalValueUsd": 5287465402,
@@ -1474,12 +1549,13 @@
         "Light Street Capital",
         "Tiger Global Management"
       ],
-      "rationale": "7 tracked manager signal(s), 0 unusually bullish, 7 high-confidence. Includes 7 13F signal(s) and 0 13D/G event(s). Aggregate matched 13F value $5.29B; reported 13F value change $321.7M."
+      "rationale": "7 tracked signal(s) across 7 manager(s), 0 unusually bullish, 7 high-confidence. Includes 7 13F signal(s) and 0 13D/G event(s). Aggregate matched 13F value $5.29B; reported 13F value change $321.7M."
     },
     {
       "symbol": "NVDA",
       "securityName": "NVIDIA",
-      "managers": 6,
+      "signalCount": 6,
+      "managerCount": 6,
       "unusuallyBullishManagers": 2,
       "highConfidenceSignals": 6,
       "totalValueUsd": 4589111506,
@@ -1497,12 +1573,13 @@
         "Appaloosa LP",
         "Tiger Global Management"
       ],
-      "rationale": "6 tracked manager signal(s), 2 unusually bullish, 6 high-confidence. Includes 6 13F signal(s) and 0 13D/G event(s). Aggregate matched 13F value $4.59B; reported 13F value change -$553.1M."
+      "rationale": "6 tracked signal(s) across 6 manager(s), 2 unusually bullish, 6 high-confidence. Includes 6 13F signal(s) and 0 13D/G event(s). Aggregate matched 13F value $4.59B; reported 13F value change -$553.1M."
     },
     {
       "symbol": "AVGO",
       "securityName": "Broadcom",
-      "managers": 6,
+      "signalCount": 6,
+      "managerCount": 6,
       "unusuallyBullishManagers": 1,
       "highConfidenceSignals": 6,
       "totalValueUsd": 4032105148,
@@ -1520,12 +1597,32 @@
         "Tiger Global Management",
         "D1 Capital Partners"
       ],
-      "rationale": "6 tracked manager signal(s), 1 unusually bullish, 6 high-confidence. Includes 6 13F signal(s) and 0 13D/G event(s). Aggregate matched 13F value $4.03B; reported 13F value change -$60.2M."
+      "rationale": "6 tracked signal(s) across 6 manager(s), 1 unusually bullish, 6 high-confidence. Includes 6 13F signal(s) and 0 13D/G event(s). Aggregate matched 13F value $4.03B; reported 13F value change -$60.2M."
+    },
+    {
+      "symbol": "CLS",
+      "securityName": "Celestica",
+      "signalCount": 4,
+      "managerCount": 1,
+      "unusuallyBullishManagers": 3,
+      "highConfidenceSignals": 4,
+      "totalValueUsd": 556453604,
+      "totalDeltaUsd": -181044273,
+      "maxSignalScore": 87,
+      "weightedScore": 373,
+      "thirteenFSignals": 1,
+      "ownershipEvents": 3,
+      "latestReportDate": "2025-12-31",
+      "managerNames": [
+        "Whale Rock Capital Management"
+      ],
+      "rationale": "4 tracked signal(s) across 1 manager(s), 3 unusually bullish, 4 high-confidence. Includes 1 13F signal(s) and 3 13D/G event(s). Aggregate matched 13F value $556.5M; reported 13F value change -$181.0M."
     },
     {
       "symbol": "ASML",
       "securityName": "ASML",
-      "managers": 3,
+      "signalCount": 3,
+      "managerCount": 3,
       "unusuallyBullishManagers": 1,
       "highConfidenceSignals": 3,
       "totalValueUsd": 725905360,
@@ -1540,12 +1637,13 @@
         "Light Street Capital",
         "Appaloosa LP"
       ],
-      "rationale": "3 tracked manager signal(s), 1 unusually bullish, 3 high-confidence. Includes 3 13F signal(s) and 0 13D/G event(s). Aggregate matched 13F value $725.9M; reported 13F value change $646.1M."
+      "rationale": "3 tracked signal(s) across 3 manager(s), 1 unusually bullish, 3 high-confidence. Includes 3 13F signal(s) and 0 13D/G event(s). Aggregate matched 13F value $725.9M; reported 13F value change $646.1M."
     },
     {
       "symbol": "AMAT",
       "securityName": "Applied Materials",
-      "managers": 2,
+      "signalCount": 2,
+      "managerCount": 2,
       "unusuallyBullishManagers": 1,
       "highConfidenceSignals": 2,
       "totalValueUsd": 1767970929,
@@ -1559,30 +1657,13 @@
         "Coatue Management",
         "Tiger Global Management"
       ],
-      "rationale": "2 tracked manager signal(s), 1 unusually bullish, 2 high-confidence. Includes 2 13F signal(s) and 0 13D/G event(s). Aggregate matched 13F value $1.77B; reported 13F value change $899.0M."
-    },
-    {
-      "symbol": "CLS",
-      "securityName": "Celestica",
-      "managers": 2,
-      "unusuallyBullishManagers": 1,
-      "highConfidenceSignals": 2,
-      "totalValueUsd": 556453604,
-      "totalDeltaUsd": -181044273,
-      "maxSignalScore": 86,
-      "weightedScore": 171,
-      "thirteenFSignals": 1,
-      "ownershipEvents": 1,
-      "latestReportDate": "2025-12-31",
-      "managerNames": [
-        "Whale Rock Capital Management"
-      ],
-      "rationale": "2 tracked manager signal(s), 1 unusually bullish, 2 high-confidence. Includes 1 13F signal(s) and 1 13D/G event(s). Aggregate matched 13F value $556.5M; reported 13F value change -$181.0M."
+      "rationale": "2 tracked signal(s) across 2 manager(s), 1 unusually bullish, 2 high-confidence. Includes 2 13F signal(s) and 0 13D/G event(s). Aggregate matched 13F value $1.77B; reported 13F value change $899.0M."
     },
     {
       "symbol": "CEG",
       "securityName": "Constellation Energy",
-      "managers": 2,
+      "signalCount": 2,
+      "managerCount": 2,
       "unusuallyBullishManagers": 1,
       "highConfidenceSignals": 2,
       "totalValueUsd": 2109106333,
@@ -1596,12 +1677,13 @@
         "Light Street Capital",
         "Coatue Management"
       ],
-      "rationale": "2 tracked manager signal(s), 1 unusually bullish, 2 high-confidence. Includes 2 13F signal(s) and 0 13D/G event(s). Aggregate matched 13F value $2.11B; reported 13F value change $209.1M."
+      "rationale": "2 tracked signal(s) across 2 manager(s), 1 unusually bullish, 2 high-confidence. Includes 2 13F signal(s) and 0 13D/G event(s). Aggregate matched 13F value $2.11B; reported 13F value change $209.1M."
     },
     {
       "symbol": "VST",
       "securityName": "Vistra",
-      "managers": 2,
+      "signalCount": 2,
+      "managerCount": 2,
       "unusuallyBullishManagers": 0,
       "highConfidenceSignals": 2,
       "totalValueUsd": 993290257,
@@ -1615,12 +1697,13 @@
         "Lone Pine Capital",
         "Appaloosa LP"
       ],
-      "rationale": "2 tracked manager signal(s), 0 unusually bullish, 2 high-confidence. Includes 2 13F signal(s) and 0 13D/G event(s). Aggregate matched 13F value $993.3M; reported 13F value change -$171.3M."
+      "rationale": "2 tracked signal(s) across 2 manager(s), 0 unusually bullish, 2 high-confidence. Includes 2 13F signal(s) and 0 13D/G event(s). Aggregate matched 13F value $993.3M; reported 13F value change -$171.3M."
     },
     {
       "symbol": "VRT",
       "securityName": "Vertiv",
-      "managers": 1,
+      "signalCount": 1,
+      "managerCount": 1,
       "unusuallyBullishManagers": 1,
       "highConfidenceSignals": 1,
       "totalValueUsd": 134297703,
@@ -1633,12 +1716,13 @@
       "managerNames": [
         "Coatue Management"
       ],
-      "rationale": "1 tracked manager signal(s), 1 unusually bullish, 1 high-confidence. Includes 1 13F signal(s) and 0 13D/G event(s). Aggregate matched 13F value $134.3M; reported 13F value change $134.3M."
+      "rationale": "1 tracked signal(s) across 1 manager(s), 1 unusually bullish, 1 high-confidence. Includes 1 13F signal(s) and 0 13D/G event(s). Aggregate matched 13F value $134.3M; reported 13F value change $134.3M."
     },
     {
       "symbol": "COHR",
       "securityName": "Coherent",
-      "managers": 1,
+      "signalCount": 1,
+      "managerCount": 1,
       "unusuallyBullishManagers": 1,
       "highConfidenceSignals": 1,
       "totalValueUsd": 202059299,
@@ -1651,12 +1735,13 @@
       "managerNames": [
         "Whale Rock Capital Management"
       ],
-      "rationale": "1 tracked manager signal(s), 1 unusually bullish, 1 high-confidence. Includes 1 13F signal(s) and 0 13D/G event(s). Aggregate matched 13F value $202.1M; reported 13F value change $152.6M."
+      "rationale": "1 tracked signal(s) across 1 manager(s), 1 unusually bullish, 1 high-confidence. Includes 1 13F signal(s) and 0 13D/G event(s). Aggregate matched 13F value $202.1M; reported 13F value change $152.6M."
     },
     {
       "symbol": "AMKR",
       "securityName": "Amkor",
-      "managers": 1,
+      "signalCount": 1,
+      "managerCount": 1,
       "unusuallyBullishManagers": 1,
       "highConfidenceSignals": 1,
       "totalValueUsd": 11366095,
@@ -1669,12 +1754,13 @@
       "managerNames": [
         "Light Street Capital"
       ],
-      "rationale": "1 tracked manager signal(s), 1 unusually bullish, 1 high-confidence. Includes 1 13F signal(s) and 0 13D/G event(s). Aggregate matched 13F value $11.4M; reported 13F value change $11.4M."
+      "rationale": "1 tracked signal(s) across 1 manager(s), 1 unusually bullish, 1 high-confidence. Includes 1 13F signal(s) and 0 13D/G event(s). Aggregate matched 13F value $11.4M; reported 13F value change $11.4M."
     },
     {
       "symbol": "ANET",
       "securityName": "Arista Networks",
-      "managers": 1,
+      "signalCount": 1,
+      "managerCount": 1,
       "unusuallyBullishManagers": 1,
       "highConfidenceSignals": 1,
       "totalValueUsd": 126107072,
@@ -1687,12 +1773,13 @@
       "managerNames": [
         "D1 Capital Partners"
       ],
-      "rationale": "1 tracked manager signal(s), 1 unusually bullish, 1 high-confidence. Includes 1 13F signal(s) and 0 13D/G event(s). Aggregate matched 13F value $126.1M; reported 13F value change $126.1M."
+      "rationale": "1 tracked signal(s) across 1 manager(s), 1 unusually bullish, 1 high-confidence. Includes 1 13F signal(s) and 0 13D/G event(s). Aggregate matched 13F value $126.1M; reported 13F value change $126.1M."
     },
     {
       "symbol": "ETN",
       "securityName": "Eaton",
-      "managers": 1,
+      "signalCount": 1,
+      "managerCount": 1,
       "unusuallyBullishManagers": 0,
       "highConfidenceSignals": 1,
       "totalValueUsd": 1503756739,
@@ -1705,12 +1792,13 @@
       "managerNames": [
         "Coatue Management"
       ],
-      "rationale": "1 tracked manager signal(s), 0 unusually bullish, 1 high-confidence. Includes 1 13F signal(s) and 0 13D/G event(s). Aggregate matched 13F value $1.50B; reported 13F value change -$290.7M."
+      "rationale": "1 tracked signal(s) across 1 manager(s), 0 unusually bullish, 1 high-confidence. Includes 1 13F signal(s) and 0 13D/G event(s). Aggregate matched 13F value $1.50B; reported 13F value change -$290.7M."
     },
     {
       "symbol": "MRVL",
       "securityName": "Marvell",
-      "managers": 1,
+      "signalCount": 1,
+      "managerCount": 1,
       "unusuallyBullishManagers": 0,
       "highConfidenceSignals": 1,
       "totalValueUsd": 176677329,
@@ -1723,7 +1811,7 @@
       "managerNames": [
         "Coatue Management"
       ],
-      "rationale": "1 tracked manager signal(s), 0 unusually bullish, 1 high-confidence. Includes 1 13F signal(s) and 0 13D/G event(s). Aggregate matched 13F value $176.7M; reported 13F value change $1.9M."
+      "rationale": "1 tracked signal(s) across 1 manager(s), 0 unusually bullish, 1 high-confidence. Includes 1 13F signal(s) and 0 13D/G event(s). Aggregate matched 13F value $176.7M; reported 13F value change $1.9M."
     }
   ],
   "sourceLinks": [

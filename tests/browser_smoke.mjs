@@ -63,6 +63,9 @@ async function runViewport({ name, width, height, port }) {
         !overlaps(topbarRects[1], topbarRects[2]);
       const titleVisible = document.querySelector('.brand h1')?.textContent === 'AI Boom Bottleneck Investment Lab' &&
         document.querySelector('.brand h1')?.getClientRects().length > 0;
+      document.querySelector('#earlyMoverInput').value = 'unusual';
+      document.querySelector('#earlyMoverInput').dispatchEvent(new Event('change', { bubbles: true }));
+      const earlyMoverControl = document.querySelector('#earlyMoverInput')?.value === 'unusual';
       const boundedSelectors = ['.brand', '.tabs', '.top-actions', '.grid-shell', '.workspace', '.metrics-grid', '.chart-panel', '.control-rail'];
       const boundedLayout = boundedSelectors.every((selector) => {
         const node = document.querySelector(selector);
@@ -90,6 +93,11 @@ async function runViewport({ name, width, height, port }) {
       document.querySelector('[data-tab="Event Radar"]').click();
       const eventVisible = document.body.textContent.includes('Late-breaking trade radar') &&
         document.body.textContent.includes('AI chip export-control');
+      document.querySelector('[data-tab="Early Movers"]').click();
+      const earlyMoversVisible = document.body.textContent.includes('Known early mover filter') &&
+        document.body.textContent.includes('Schedule 13D/13G') &&
+        document.body.textContent.includes('Whale Rock Capital Management') &&
+        document.body.textContent.includes('Open SEC filing');
       document.querySelector('#riskProfileInput').value = 'survival';
       document.querySelector('#riskProfileInput').dispatchEvent(new Event('change', { bubbles: true }));
       const survivalVisible = document.body.textContent.includes('Do-not-zero') &&
@@ -116,7 +124,7 @@ async function runViewport({ name, width, height, port }) {
       const after = document.querySelector('.metric strong')?.textContent || '';
       document.querySelector('#copyScenario').click();
       const hashOk = location.hash.startsWith('#scenario=');
-      const sourceVisible = Array.from(document.querySelectorAll('[data-tab]')).length === 9;
+      const sourceVisible = Array.from(document.querySelectorAll('[data-tab]')).length === 10;
       const tabClicksWork = Array.from(document.querySelectorAll('[data-tab]')).every((button) => {
         const tab = button.dataset.tab;
         button.click();
@@ -133,6 +141,7 @@ async function runViewport({ name, width, height, port }) {
         sleeveTotalVisible,
         topbarNoOverlap,
         titleVisible,
+        earlyMoverControl,
         boundedLayout,
         inspectorClosed,
         inspectorReopened,
@@ -143,6 +152,7 @@ async function runViewport({ name, width, height, port }) {
         optionsVisible,
         combosVisible,
         eventVisible,
+        earlyMoversVisible,
         survivalVisible,
         zeroPremiumLossHonored,
         ideaVisible,
@@ -163,6 +173,7 @@ async function runViewport({ name, width, height, port }) {
     assert(smoke.sleeveTotalVisible, `${name}: sleeve total helper is not visible`);
     assert(smoke.topbarNoOverlap, `${name}: topbar regions overlap`);
     assert(smoke.titleVisible, `${name}: full title text is not visible in the DOM`);
+    assert(smoke.earlyMoverControl, `${name}: early mover lens control did not apply`);
     assert(smoke.boundedLayout, `${name}: primary layout extends outside the viewport`);
     assert(smoke.inspectorClosed, `${name}: inspector did not close cleanly`);
     assert(smoke.inspectorReopened, `${name}: inspector did not reopen cleanly`);
@@ -172,6 +183,7 @@ async function runViewport({ name, width, height, port }) {
     assert(smoke.zeroDteVisible, `${name}: 0DTE event tape did not render`);
     assert(smoke.combosVisible, `${name}: combo strategy selector did not render`);
     assert(smoke.eventVisible, `${name}: event radar did not render`);
+    assert(smoke.earlyMoversVisible, `${name}: early movers tab did not render`);
     assert(smoke.survivalVisible, `${name}: risk profile did not apply`);
     assert(smoke.zeroPremiumLossHonored, `${name}: 0% max premium loss did not zero options sleeve`);
     assert(smoke.ideaVisible, `${name}: idea board note did not render`);
@@ -233,8 +245,12 @@ async function cdp(wsUrl) {
 async function waitForReady(client) {
   const deadline = Date.now() + 10000;
   while (Date.now() < deadline) {
-    const ready = await evaluate(client, `document.readyState === 'complete' && !!document.querySelector('[data-tab="Optimizer"]')`);
-    if (ready) return;
+    try {
+      const ready = await evaluate(client, `document.readyState === 'complete' && !!document.querySelector('[data-tab="Optimizer"]') && !!document.querySelector('#earlyMoverInput')`);
+      if (ready) return;
+    } catch (error) {
+      if (!String(error.message).includes("default execution context")) throw error;
+    }
     await delay(100);
   }
   throw new Error("Page did not become ready");

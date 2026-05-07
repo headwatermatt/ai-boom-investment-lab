@@ -1,5 +1,6 @@
 const state = {
   data: null,
+  earlyMovers: null,
   factors: {},
   activeTab: "Optimizer",
   selectedSymbol: "RMBS",
@@ -11,7 +12,7 @@ const state = {
   inspectorOpen: true
 };
 
-const tabs = ["Landscape", "Optimizer", "Timeline", "Options Ladder", "Event Radar", "Idea Board", "Sentiment", "Risk Map", "Source Ledger"];
+const tabs = ["Landscape", "Optimizer", "Timeline", "Options Ladder", "Event Radar", "Early Movers", "Idea Board", "Sentiment", "Risk Map", "Source Ledger"];
 const colors = ["#196d68", "#c9821c", "#3c5f82", "#2b7a4b", "#7f5f9a", "#9b5a3f", "#6b7f52", "#b44b43", "#4e777a", "#9a8a3f"];
 const factorLabels = {
   capex: "Capex",
@@ -35,12 +36,34 @@ async function init() {
     const response = await fetch("data/research_snapshot.json", { cache: "no-store" });
     if (!response.ok) throw new Error(`Unable to load research snapshot: ${response.status}`);
     state.data = await response.json();
+    state.earlyMovers = await loadEarlyMoversSnapshot();
     hydrateDefaults();
     loadScenarioFromHash();
     recalculate();
     render();
   } catch (error) {
     app.innerHTML = `<section class="error-state"><h1>Could not load the lab</h1><p>${escapeHtml(error.message)}</p><p>Run this from a local web server, for example <code>python3 -m http.server 4173</code>, then open <code>http://127.0.0.1:4173</code>.</p></section>`;
+  }
+}
+
+async function loadEarlyMoversSnapshot() {
+  try {
+    const response = await fetch("data/early_movers_snapshot.json", { cache: "no-store" });
+    if (!response.ok) throw new Error(`Unable to load early mover snapshot: ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    console.warn("Early mover snapshot unavailable", error);
+    return {
+      metadata: {
+        title: "SEC EDGAR Early Mover Snapshot",
+        generatedAt: null,
+        caveat: "Early mover snapshot unavailable in this build."
+      },
+      managers: [],
+      signals: [],
+      summaryBySymbol: [],
+      sourceLinks: []
+    };
   }
 }
 
@@ -71,6 +94,7 @@ function loadScenarioFromHash() {
       if (parsed.portfolio.riskProfile) state.portfolio.riskProfile = String(parsed.portfolio.riskProfile);
       if (parsed.portfolio.targetReturn) state.portfolio.targetReturn = String(parsed.portfolio.targetReturn);
       if (parsed.portfolio.capAppetite) state.portfolio.capAppetite = String(parsed.portfolio.capAppetite);
+      if (parsed.portfolio.earlyMoverLens) state.portfolio.earlyMoverLens = String(parsed.portfolio.earlyMoverLens);
     }
     if (parsed.selectedSymbol) state.selectedSymbol = parsed.selectedSymbol;
     if (Array.isArray(parsed.collabNotes)) {
@@ -134,6 +158,7 @@ function scoreInstrument(item, probabilities) {
     targetReturnBoost(item, adjustedBear, adjustedBase, adjustedBull) +
     timelineBoost(item) +
     capAppetiteBoost(item) +
+    earlyMoverBoost(item) +
     eventTapeBoost(item) -
     riskPenalty * tilt.valuationPenalty -
     downside * 18 * tilt.bearPenalty;
@@ -436,6 +461,11 @@ function render() {
     </main>
   `;
   bindEvents();
+  requestAnimationFrame(keepActiveTabVisible);
+}
+
+function keepActiveTabVisible() {
+  document.querySelector(".tab.active")?.scrollIntoView({ block: "nearest", inline: "center" });
 }
 
 function renderLiveSections() {
@@ -470,6 +500,7 @@ function renderControls() {
           <label class="input-field"><span>Equity sleeve %</span><input id="equityInput" type="number" min="0" max="100" step="1" value="${state.portfolio.equityCap}"></label>
           <label class="input-field"><span>Options sleeve %</span><input id="optionsInput" type="number" min="0" max="100" step="1" value="${state.portfolio.optionsCap}"></label>
           <label class="input-field"><span>Cap appetite</span><select id="capAppetiteInput">${capAppetiteOptions().map((option) => `<option value="${option.id}" ${option.id === state.portfolio.capAppetite ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}</select></label>
+          <label class="input-field"><span>Early mover lens</span><select id="earlyMoverInput">${earlyMoverOptions().map((option) => `<option value="${option.id}" ${option.id === state.portfolio.earlyMoverLens ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}</select></label>
         </div>
         <div class="allocation-check ${Math.abs(sleeveTotal - 100) < 0.01 ? "good" : "warn"}">
           <span>Equity + options split</span>
@@ -519,6 +550,7 @@ function renderActiveTab() {
   if (state.activeTab === "Timeline") return renderTimeline();
   if (state.activeTab === "Options Ladder") return renderOptionsLadder();
   if (state.activeTab === "Event Radar") return renderEventRadar();
+  if (state.activeTab === "Early Movers") return renderEarlyMovers();
   if (state.activeTab === "Idea Board") return renderIdeaBoard();
   if (state.activeTab === "Sentiment") return renderSentiment();
   if (state.activeTab === "Risk Map") return renderRiskMap();
@@ -806,6 +838,108 @@ function renderEventCard(event) {
   `;
 }
 
+function renderEarlyMovers() {
+  const summaryRows = earlyMoverSummaries();
+  const signalRows = earlyMoverSignals();
+  const ownershipCount = signalRows.filter((signal) => signal.sourceType === "13D/G").length;
+  const unusualCount = signalRows.filter((signal) => signal.unusuallyBullish).length;
+  const generated = state.earlyMovers?.metadata?.generatedAt ? formatDateTime(state.earlyMovers.metadata.generatedAt) : "unavailable";
+  return `
+    <section class="tab-panel">
+      <section class="panel narrative">
+        <h2>Known early mover filter</h2>
+        <p>This lens tracks known funds and investors of scale with a curated success-history prior, then flags matched AI-stack holdings from SEC 13F and more time-sensitive Schedule 13D/13G filings. It is a context layer only: 13F is delayed, 13D/G is ownership disclosure, and neither proves live intent.</p>
+      </section>
+      <section class="metrics-grid">
+        <div class="metric"><span>Tracked managers</span><strong>${state.earlyMovers.managers.length}</strong><em>SEC CIKs monitored</em></div>
+        <div class="metric"><span>Matched signals</span><strong>${signalRows.length}</strong><em>${ownershipCount} from 13D/G ownership events</em></div>
+        <div class="metric"><span>Unusually bullish</span><strong>${unusualCount}</strong><em>score and confidence threshold</em></div>
+        <div class="metric"><span>Snapshot</span><strong>${escapeHtml(generated)}</strong><em>static EDGAR pull</em></div>
+      </section>
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Signal Filter</h2>
+          <small>${escapeHtml(earlyMoverLabel(state.portfolio.earlyMoverLens))}</small>
+        </div>
+        <div class="lens-grid">
+          ${earlyMoverOptions().map((option) => `
+            <button class="lens-button ${option.id === state.portfolio.earlyMoverLens ? "active" : ""}" type="button" data-early-lens="${option.id}">
+              <strong>${escapeHtml(option.label)}</strong>
+              <span>${escapeHtml(option.help)}</span>
+            </button>
+          `).join("")}
+        </div>
+      </section>
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Symbol Stack Rank</h2>
+          <small>${summaryRows.length} matched AI names</small>
+        </div>
+        <div class="early-summary-grid">
+          ${summaryRows.map((row) => `
+            <article class="early-summary selectable-card" data-select="${row.symbol}">
+              <header>
+                <div><h3>${row.symbol} · ${escapeHtml(row.securityName)}</h3><p>${escapeHtml(row.managerNames.join(", "))}</p></div>
+                <span class="tag ${row.unusuallyBullishManagers ? "good" : row.ownershipEvents ? "warn" : ""}">${row.weightedScore}</span>
+              </header>
+              <div class="early-stats">
+                <span>${row.managers} signals</span>
+                <span>${row.unusuallyBullishManagers} unusual</span>
+                <span>${row.ownershipEvents} 13D/G</span>
+                <span>${formatMoney(row.totalValueUsd)} 13F</span>
+              </div>
+              <p>${escapeHtml(row.rationale)}</p>
+            </article>
+          `).join("")}
+        </div>
+      </section>
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Unusual Trade / Ownership Signals</h2>
+          <small>${signalRows.length} source-linked rows</small>
+        </div>
+        <div class="early-signal-grid">
+          ${signalRows.map((signal) => `
+            <article class="early-signal selectable-card" data-select="${signal.symbol}">
+              <header>
+                <div>
+                  <h3>${signal.symbol} · ${escapeHtml(signal.managerName)}</h3>
+                  <p>${escapeHtml(signal.filingType)} · ${escapeHtml(signal.latestFilingDate || signal.latestReportDate)} · ${escapeHtml(signal.stance)}</p>
+                </div>
+                <span class="tag ${signal.unusuallyBullish ? "good" : signal.sourceType === "13D/G" ? "warn" : ""}">${signal.signalScore}/${signal.confidence}</span>
+              </header>
+              <div class="early-stats">
+                <span>${escapeHtml(signal.sourceType)}</span>
+                <span>${formatMoney(signal.valueUsd || 0)} value</span>
+                <span>${formatMoney(signal.deltaValueUsd || 0)} delta</span>
+                <span>${signal.ownershipPct ? `${signal.ownershipPct}% owned` : "ownership n/a"}</span>
+              </div>
+              <p>${escapeHtml(signal.rationale)}</p>
+              <p class="footer-note"><a href="${escapeAttr(signal.sourceUrl)}" target="_blank" rel="noreferrer">Open SEC filing</a>${signal.informationTableUrl ? ` · <a href="${escapeAttr(signal.informationTableUrl)}" target="_blank" rel="noreferrer">source table/text</a>` : ""}</p>
+            </article>
+          `).join("")}
+        </div>
+      </section>
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Method Caveats</h2>
+          <small>Do not overfit</small>
+        </div>
+        <div class="claim-list">
+          <article class="claim">
+            <header><h3>What the signal can say</h3><span class="tag good">useful context</span></header>
+            <p>${escapeHtml(state.earlyMovers.metadata.caveat || "")}</p>
+          </article>
+          <article class="claim">
+            <header><h3>What it cannot say</h3><span class="tag warn">hard limit</span></header>
+            <p>It cannot see intraday trading, private funds below reporting thresholds, swaps, shorts, most offshore exposure, or whether a reported long position is hedged elsewhere.</p>
+          </article>
+        </div>
+      </section>
+    </section>
+  `;
+}
+
 function renderIdeaBoard() {
   const selected = state.ranked.find((item) => item.symbol === state.selectedSymbol) || state.ranked[0];
   const notes = [...state.collabNotes].sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
@@ -999,6 +1133,7 @@ function renderSourceLedger() {
 function renderInspector() {
   const selected = state.ranked.find((item) => item.symbol === state.selectedSymbol) || state.ranked[0];
   const sourceRows = selected.sources.map((id) => state.data.sources.find((source) => source.id === id)).filter(Boolean);
+  const early = earlyMoverSummary(selected.symbol);
   return `
     <aside class="panel inspector">
       <div class="panel-header">
@@ -1025,6 +1160,12 @@ function renderInspector() {
           <h3>Thesis</h3>
           <p>${escapeHtml(selected.thesis)}</p>
         </div>
+        ${early ? `
+          <div class="text-block">
+            <h3>Early mover signal</h3>
+            <p>${escapeHtml(early.rationale)} Managers: ${escapeHtml(early.managerNames.join(", "))}.</p>
+          </div>
+        ` : ""}
         <div class="text-block">
           <h3>What must be true</h3>
           <p>${escapeHtml(selected.mustBeTrue)}</p>
@@ -1169,6 +1310,7 @@ function bindEvents() {
   const timeline = document.getElementById("timelineInput");
   const eventTape = document.getElementById("eventTapeInput");
   const capAppetite = document.getElementById("capAppetiteInput");
+  const earlyMover = document.getElementById("earlyMoverInput");
   if (capital) capital.addEventListener("change", () => updatePortfolio("capital", clamp(Number(capital.value), 1000, 100000000)));
   if (equity) equity.addEventListener("change", () => updateSleeve("equityCap", Number(equity.value)));
   if (options) options.addEventListener("change", () => updateSleeve("optionsCap", Number(options.value)));
@@ -1192,6 +1334,7 @@ function bindEvents() {
     });
   }
   if (capAppetite) capAppetite.addEventListener("change", () => updatePortfolio("capAppetite", capAppetite.value));
+  if (earlyMover) earlyMover.addEventListener("change", () => updatePortfolio("earlyMoverLens", earlyMover.value));
 
   document.getElementById("toggleInspector")?.addEventListener("click", toggleInspector);
   document.getElementById("copyScenario")?.addEventListener("click", copyScenarioLink);
@@ -1213,6 +1356,9 @@ function bindDynamicEvents() {
   });
   document.querySelectorAll("[data-cap-appetite]").forEach((button) => {
     button.addEventListener("click", () => updatePortfolio("capAppetite", button.dataset.capAppetite));
+  });
+  document.querySelectorAll("[data-early-lens]").forEach((button) => {
+    button.addEventListener("click", () => updatePortfolio("earlyMoverLens", button.dataset.earlyLens));
   });
   document.getElementById("ideaForm")?.addEventListener("submit", addIdea);
   document.getElementById("addIdeaButton")?.addEventListener("click", addIdea);
@@ -1278,6 +1424,7 @@ function normalizePortfolioSleeves() {
   state.portfolio.timelineMonths = clamp(Number(state.portfolio.timelineMonths) || 0, 0, 60);
   state.portfolio.eventTapeIntensity = clamp(Number(state.portfolio.eventTapeIntensity) || 0, 0, 100);
   if (!capAppetiteOptions().some((option) => option.id === state.portfolio.capAppetite)) state.portfolio.capAppetite = "all";
+  if (!earlyMoverOptions().some((option) => option.id === state.portfolio.earlyMoverLens)) state.portfolio.earlyMoverLens = "boost";
 }
 
 function getMaxPremiumLoss() {
@@ -1333,6 +1480,7 @@ function importScenario(event) {
         if (parsed.portfolio.riskProfile) state.portfolio.riskProfile = String(parsed.portfolio.riskProfile);
         if (parsed.portfolio.targetReturn) state.portfolio.targetReturn = String(parsed.portfolio.targetReturn);
         if (parsed.portfolio.capAppetite) state.portfolio.capAppetite = String(parsed.portfolio.capAppetite);
+        if (parsed.portfolio.earlyMoverLens) state.portfolio.earlyMoverLens = String(parsed.portfolio.earlyMoverLens);
       }
       state.selectedSymbol = parsed.selectedSymbol || state.selectedSymbol;
       if (Array.isArray(parsed.collabNotes)) {
@@ -1559,6 +1707,44 @@ function eventTapeBoost(item) {
   return raw * intensity;
 }
 
+function earlyMoverBoost(item) {
+  const lens = state.portfolio.earlyMoverLens || "boost";
+  if (lens === "off") return 0;
+  const summary = earlyMoverSummary(item.symbol);
+  if (!summary) {
+    if (lens === "require") return -22;
+    if (lens === "unusual") return -34;
+    return 0;
+  }
+  const base = clamp(summary.weightedScore / 18 + summary.unusuallyBullishManagers * 5 + summary.ownershipEvents * 6 + summary.highConfidenceSignals * 2, 0, 34);
+  if (lens === "unusual") return summary.unusuallyBullishManagers > 0 || summary.ownershipEvents > 0 ? base + 8 : -20;
+  if (lens === "require") return base;
+  return base * 0.75;
+}
+
+function earlyMoverSummaries() {
+  const rows = state.earlyMovers?.summaryBySymbol || [];
+  const lens = state.portfolio.earlyMoverLens || "boost";
+  return rows
+    .filter((row) => lens !== "unusual" || row.unusuallyBullishManagers > 0 || row.ownershipEvents > 0)
+    .sort((a, b) => b.weightedScore - a.weightedScore);
+}
+
+function earlyMoverSignals() {
+  const lens = state.portfolio.earlyMoverLens || "boost";
+  return (state.earlyMovers?.signals || [])
+    .filter((signal) => lens !== "unusual" || signal.unusuallyBullish || signal.sourceType === "13D/G")
+    .sort((a, b) => {
+      if (a.sourceType !== b.sourceType) return a.sourceType === "13D/G" ? -1 : 1;
+      return b.signalScore - a.signalScore;
+    })
+    .slice(0, 36);
+}
+
+function earlyMoverSummary(symbol) {
+  return (state.earlyMovers?.summaryBySymbol || []).find((row) => row.symbol === symbol);
+}
+
 function capAppetiteBoost(item) {
   const appetite = state.portfolio.capAppetite || "all";
   const tier = capTier(item);
@@ -1601,6 +1787,19 @@ function capAppetiteOptions() {
     { id: "largeMid", label: "Large + mid cap" },
     { id: "smallMicro", label: "Small/micro scout" }
   ];
+}
+
+function earlyMoverOptions() {
+  return [
+    { id: "off", label: "Ignore EDGAR", help: "Do not change the ranker from SEC manager signals." },
+    { id: "boost", label: "Boost confirmed", help: "Add a modest score boost when tracked managers are present." },
+    { id: "require", label: "Prefer tracked", help: "Penalize names with no tracked early-mover signal." },
+    { id: "unusual", label: "Unusual only", help: "Focus on high-score, high-confidence, or 13D/G event signals." }
+  ];
+}
+
+function earlyMoverLabel(value) {
+  return earlyMoverOptions().find((option) => option.id === value)?.label || "Boost confirmed";
 }
 
 function capAppetiteLabel(value) {
@@ -1691,6 +1890,12 @@ function formatDate(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "unsaved";
   return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+
+function formatDateTime(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "unavailable";
+  return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 }
 
 function escapeHtml(value) {

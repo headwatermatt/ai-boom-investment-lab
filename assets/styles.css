@@ -933,6 +933,42 @@ tr.selectable.selected {
   min-height: 36px;
 }
 
+.lens-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  padding: 12px;
+}
+
+.lens-button {
+  display: grid;
+  align-content: start;
+  gap: 5px;
+  min-height: 70px;
+  padding: 10px;
+  text-align: left;
+  background: #fbfcfb;
+}
+
+.lens-button strong {
+  font-size: 12px;
+}
+
+.lens-button span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.lens-button.active {
+  background: var(--charcoal);
+  border-color: var(--charcoal);
+  color: #fff;
+}
+
+.lens-button.active span {
+  color: #dfe6e3;
+}
+
 .timeline-idea-grid,
 .event-tape-grid {
   display: grid;
@@ -996,6 +1032,75 @@ tr.selectable.selected {
   margin: 0;
   color: #303936;
   font-size: 12px;
+}
+
+.early-summary-grid,
+.early-signal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 12px;
+}
+
+.early-summary,
+.early-signal {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #fff;
+  cursor: pointer;
+}
+
+.early-summary:hover,
+.early-signal:hover {
+  border-color: var(--border-strong);
+  background: #fbfcfb;
+}
+
+.early-summary header,
+.early-signal header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.early-summary h3,
+.early-signal h3 {
+  margin: 0;
+  font-size: 13px;
+}
+
+.early-summary p,
+.early-signal p {
+  margin: 0;
+  color: #303936;
+  font-size: 12px;
+}
+
+.early-summary header p,
+.early-signal header p {
+  color: var(--muted);
+}
+
+.early-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.early-stats span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 7px;
+  border: 1px solid #edf0ee;
+  border-radius: 999px;
+  color: var(--muted);
+  background: #fbfcfb;
+  font-size: 11px;
 }
 
 .two-mini-cols {
@@ -1378,6 +1483,9 @@ tr.selectable.selected {
   .event-grid,
   .archetype-grid,
   .combo-grid,
+  .lens-grid,
+  .early-summary-grid,
+  .early-signal-grid,
   .timeline-idea-grid,
   .event-tape-grid,
   .sentiment-grid {
@@ -1489,7 +1597,8 @@ tr.selectable.selected {
   }
 
   .timeline-band,
-  .cap-grid {
+  .cap-grid,
+  .lens-grid {
     grid-template-columns: 1fr;
   }
 }

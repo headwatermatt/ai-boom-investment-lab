@@ -19,7 +19,9 @@ This is asynchronous collaboration. There is no account system, central database
 
 The risk-profile selector lets each investor choose between a moonshot options-heavy sleeve, a 10x-50x asymmetric structure, a high-risk survivable core, or a do-not-zero posture. The Event Radar tab is for late-breaking policy, tariff, geopolitics, capex, and architecture headlines that can change the trade stack before the long-cycle model catches up.
 
-The Timeline tab lets users shift the model from 0DTE/1-2DTE public event tape through 3-5 year structural compounding. Options and equity sleeve percentages rebalance against each other, with cash held constant. The 0DTE/event-tape lane is a secondary, defined-risk framework only and excludes material nonpublic information.
+The Timeline tab lets users shift the model from 0DTE/1-2DTE public event tape through 3-5 year structural compounding. Options and equity sleeve percentages rebalance against each other as a visible 100% split. The 0DTE/event-tape lane is a secondary, defined-risk framework only and excludes material nonpublic information.
+
+The Early Movers tab uses a static SEC EDGAR-derived snapshot from 13F and Schedule 13D/13G filings to flag known funds or investors of scale with a curated track-record prior. Schedule 13D/G items are labeled separately because they are ownership-event disclosures and can be more time-sensitive than quarterly 13F data.
 
 ## Contents
 
@@ -27,6 +29,8 @@ The Timeline tab lets users shift the model from 0DTE/1-2DTE public event tape t
 - `assets/app.js` - optimizer, charts, tabs, scenario import/export
 - `assets/styles.css` - responsive dashboard styling
 - `data/research_snapshot.json` - source-labeled research snapshot
+- `data/early_movers_snapshot.json` - SEC EDGAR-derived early-mover signal snapshot
+- `scripts/build_early_movers_snapshot.mjs` - refreshes the SEC 13F and 13D/G snapshot
 - `sources/ai-investment-landscape-bottleneck-plays.pdf` - source PDF copy
 - `reports/ui-concept.png` - generated UI concept reference
 - `tests/browser_smoke.mjs` - dependency-free Chrome smoke test via DevTools protocol

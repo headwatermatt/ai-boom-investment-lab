@@ -20,6 +20,7 @@
     "maxTotalLoss": 100,
     "timelineMonths": 24,
     "capAppetite": "all",
+    "earlyMoverLens": "boost",
     "eventTapeIntensity": 35,
     "allowNakedOptions": false,
     "allowMargin": false

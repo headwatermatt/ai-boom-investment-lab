@@ -30,6 +30,7 @@ The Early Movers tab uses a static SEC EDGAR-derived snapshot from 13F and Sched
 - `assets/styles.css` - responsive dashboard styling
 - `data/research_snapshot.json` - source-labeled research snapshot
 - `data/early_movers_snapshot.json` - SEC EDGAR-derived early-mover signal snapshot
+- `scripts/refresh_research_snapshot.mjs` - refreshes delayed market closes and late-breaking event/source metadata
 - `scripts/build_early_movers_snapshot.mjs` - refreshes the SEC 13F and 13D/G snapshot
 - `sources/ai-investment-landscape-bottleneck-plays.pdf` - source PDF copy
 - `reports/ui-concept.png` - generated UI concept reference
@@ -37,4 +38,4 @@ The Early Movers tab uses a static SEC EDGAR-derived snapshot from 13F and Sched
 
 ## Notes
 
-This is a decision-support prototype only. It uses proxy prices and proxy option economics where live market data is not connected. Refresh quotes, option chains, filings, and source evidence before trading real capital.
+This is a decision-support prototype only. It uses delayed Stooq closes for universe prices and proxy option economics where broker option chains are not connected. Refresh executable quotes, option chains, filings, and source evidence before trading real capital.

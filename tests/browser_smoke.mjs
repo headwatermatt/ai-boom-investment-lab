@@ -92,7 +92,7 @@ async function runViewport({ name, width, height, port }) {
         document.body.textContent.includes('Protective Collar');
       document.querySelector('[data-tab="Event Radar"]').click();
       const eventVisible = document.body.textContent.includes('Late-breaking trade radar') &&
-        document.body.textContent.includes('AI chip export-control');
+        document.body.textContent.includes('H200 China clearance');
       document.querySelector('[data-tab="Early Movers"]').click();
       const earlyMoversVisible = document.body.textContent.includes('Known early mover filter') &&
         document.body.textContent.includes('Schedule 13D/13G') &&

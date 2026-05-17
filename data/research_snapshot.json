@@ -2,11 +2,14 @@
   "metadata": {
     "title": "AI Boom Bottleneck Investment Lab",
     "createdAt": "2026-05-07",
-    "dataCutoff": "2026-05-07",
+    "dataCutoff": "2026-05-16",
     "horizon": "18-36 months",
     "sourcePdfPath": "sources/ai-investment-landscape-bottleneck-plays.pdf",
     "disclaimer": "Decision support only. This is not personalized financial advice, a guarantee of returns, or an instruction to trade. Prices, option chains, filings, and sentiment are volatile and must be refreshed before capital is deployed.",
-    "researchCaveat": "The source PDF and live web checks support the AI bottleneck thesis directionally, but exact prices and option contracts should be refreshed from a broker or market data API before execution."
+    "researchCaveat": "Universe prices were refreshed from delayed Stooq daily close data. These are still not executable broker quotes, and option chains, bid/ask, IV, open interest, borrow, and tax treatment must be refreshed before any trade.",
+    "marketDataAsOf": "2026-05-15",
+    "lastRegeneratedAt": "2026-05-17T02:25:23.483Z",
+    "marketDataSource": "Stooq delayed daily quotes"
   },
   "portfolioDefaults": {
     "capital": 100000,
@@ -37,7 +40,13 @@
       "maxTotalLoss": 100,
       "maxSingleEquity": 10,
       "maxSingleOption": 12,
-      "scoreTilt": {"expected": 0.8, "convexity": 1.65, "liquidity": 0.65, "valuationPenalty": 0.65, "bearPenalty": 0.25}
+      "scoreTilt": {
+        "expected": 0.8,
+        "convexity": 1.65,
+        "liquidity": 0.65,
+        "valuationPenalty": 0.65,
+        "bearPenalty": 0.25
+      }
     },
     {
       "id": "asymmetric",
@@ -50,7 +59,13 @@
       "maxTotalLoss": 70,
       "maxSingleEquity": 12,
       "maxSingleOption": 8,
-      "scoreTilt": {"expected": 1.0, "convexity": 1.2, "liquidity": 0.85, "valuationPenalty": 0.85, "bearPenalty": 0.65}
+      "scoreTilt": {
+        "expected": 1,
+        "convexity": 1.2,
+        "liquidity": 0.85,
+        "valuationPenalty": 0.85,
+        "bearPenalty": 0.65
+      }
     },
     {
       "id": "highRisk",
@@ -63,7 +78,13 @@
       "maxTotalLoss": 45,
       "maxSingleEquity": 12,
       "maxSingleOption": 5,
-      "scoreTilt": {"expected": 1.15, "convexity": 0.8, "liquidity": 1.05, "valuationPenalty": 1.05, "bearPenalty": 1.05}
+      "scoreTilt": {
+        "expected": 1.15,
+        "convexity": 0.8,
+        "liquidity": 1.05,
+        "valuationPenalty": 1.05,
+        "bearPenalty": 1.05
+      }
     },
     {
       "id": "survival",
@@ -76,7 +97,13 @@
       "maxTotalLoss": 25,
       "maxSingleEquity": 14,
       "maxSingleOption": 2,
-      "scoreTilt": {"expected": 1.25, "convexity": 0.45, "liquidity": 1.25, "valuationPenalty": 1.35, "bearPenalty": 1.45}
+      "scoreTilt": {
+        "expected": 1.25,
+        "convexity": 0.45,
+        "liquidity": 1.25,
+        "valuationPenalty": 1.35,
+        "bearPenalty": 1.45
+      }
     }
   ],
   "scenarioFactors": [
@@ -451,6 +478,56 @@
       "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/insider-trading",
       "quality": 5,
       "notes": "Legal boundary: do not trade on material nonpublic information. The app only models public rumors, official filings, public posts, and market data."
+    },
+    {
+      "id": "stooq-market-quotes",
+      "kind": "market_data",
+      "title": "Delayed daily equity quotes",
+      "publisher": "Stooq",
+      "date": "2026-05-16",
+      "url": "https://stooq.com/q/l/",
+      "quality": 3,
+      "notes": "Used only for delayed close/proxy price refresh across the app universe; not executable broker quotes."
+    },
+    {
+      "id": "iea-grids-2026",
+      "kind": "policy_primary",
+      "title": "Electricity 2026: Grids",
+      "publisher": "International Energy Agency",
+      "date": "2026",
+      "url": "https://www.iea.org/reports/electricity-2026/grids",
+      "quality": 5,
+      "notes": "Primary reference for grid capacity as a critical bottleneck, with grid infrastructure timelines longer than data-center build timelines."
+    },
+    {
+      "id": "tomshardware-lake-tahoe-grid",
+      "kind": "market_news",
+      "title": "Lake Tahoe residents could be left powerless as AI data centers inhale electricity supply",
+      "publisher": "Tom's Hardware",
+      "date": "2026-05-14",
+      "url": "https://www.tomshardware.com/tech-industry/artificial-intelligence/49-000-lake-tahoe-residents-could-be-left-powerless-as-ai-data-centers-inhale-electricity-supply-power-company-looking-to-redirect-power-to-12-data-centers-high-demand-plus-a-regulatory-limbo-equals-a-dim-situation",
+      "quality": 3,
+      "notes": "Recent public-market color on local grid stress from data-center load."
+    },
+    {
+      "id": "pcgamer-h200-china-cleared",
+      "kind": "market_news",
+      "title": "US approved Nvidia H200 sales to 10 Chinese firms, but deliveries remained pending",
+      "publisher": "PC Gamer / Reuters-reported",
+      "date": "2026-05-14",
+      "url": "https://www.pcgamer.com/hardware/the-us-has-approved-the-sale-of-nvidia-h200-chips-to-10-chinese-firms-but-sources-say-theyre-still-waiting-for-the-go-ahead-from-china-itself/",
+      "quality": 3,
+      "notes": "Late-breaking export-control tape: U.S. clearance is not equivalent to shipped China revenue."
+    },
+    {
+      "id": "tomshardware-trump-h200-blocked",
+      "kind": "market_news",
+      "title": "Trump says China is blocking Nvidia H200 purchases despite US approval",
+      "publisher": "Tom's Hardware",
+      "date": "2026-05-15",
+      "url": "https://www.tomshardware.com/tech-industry/trump-says-china-is-blocking-h200-purchases",
+      "quality": 3,
+      "notes": "Policy and geopolitical tape item for NVDA, China-sensitive semis, and export-control scenario sliders."
     }
   ],
   "claims": [
@@ -458,49 +535,77 @@
       "claim": "The highest-signal AI public-market opportunity is bottleneck suppliers rather than generic AI application exposure.",
       "status": "confirmed_directionally",
       "confidence": 0.78,
-      "evidence": ["pdf-source", "iea-energy-ai", "tsmc-ar-2025", "eia-power-demand"],
+      "evidence": [
+        "pdf-source",
+        "iea-energy-ai",
+        "tsmc-ar-2025",
+        "eia-power-demand"
+      ],
       "notes": "Primary sources support scarcity in compute, packaging, memory, grid, and power. The exact highest-return names remain valuation-dependent."
     },
     {
       "claim": "HBM and advanced packaging remain important constraints for AI infrastructure.",
       "status": "confirmed",
       "confidence": 0.86,
-      "evidence": ["iea-energy-ai", "tsmc-ar-2025", "form-q1-2026", "onto-q1-2026", "camtek-fy-2025"],
+      "evidence": [
+        "iea-energy-ai",
+        "tsmc-ar-2025",
+        "form-q1-2026",
+        "onto-q1-2026",
+        "camtek-fy-2025"
+      ],
       "notes": "Multiple primary sources point to HBM, CoWoS-like packaging, inspection, metrology, and test intensity as durable bottlenecks."
     },
     {
       "claim": "Rambus has direct AI memory-interface leverage through HBM4E and server memory interface products.",
       "status": "confirmed",
       "confidence": 0.82,
-      "evidence": ["rmbs-q1-2026", "rmbs-hbm4e"],
+      "evidence": [
+        "rmbs-q1-2026",
+        "rmbs-hbm4e"
+      ],
       "notes": "Primary sources confirm product revenue growth and HBM4E controller IP; magnitude of future monetization remains model-dependent."
     },
     {
       "claim": "Credo is a direct AI rack-scale connectivity beneficiary but has acute customer/topology concentration risk.",
       "status": "confirmed",
       "confidence": 0.83,
-      "evidence": ["crdo-q3-2026", "reddit-crdo-options"],
+      "evidence": [
+        "crdo-q3-2026",
+        "reddit-crdo-options"
+      ],
       "notes": "Primary evidence supports hyperscaler demand and concentration; social/options chatter is treated only as market-color input."
     },
     {
       "claim": "Power and cooling are first-order AI capex constraints.",
       "status": "confirmed",
-      "confidence": 0.88,
-      "evidence": ["iea-dc-2025", "eia-power-demand", "mod-2025-10k", "vrt-q4-2025"],
-      "notes": "IEA/EIA and company filings support the grid, thermal, and electrical-equipment thesis."
+      "confidence": 0.9,
+      "evidence": [
+        "iea-dc-2025",
+        "eia-power-demand",
+        "mod-2025-10k",
+        "vrt-q4-2025",
+        "iea-grids-2026",
+        "tomshardware-lake-tahoe-grid"
+      ],
+      "notes": "IEA/EIA, company filings, and fresh local-grid reports support the grid, thermal, and electrical-equipment thesis."
     },
     {
       "claim": "The PDF's quoted share prices are executable current prices.",
-      "status": "unverified",
-      "confidence": 0.34,
-      "evidence": ["pdf-source"],
-      "notes": "The prototype preserves them as snapshot/proxy inputs. Broker or market-data refresh is required before trades."
+      "status": "refreshed_proxy",
+      "confidence": 0.7,
+      "evidence": [
+        "stooq-market-quotes"
+      ],
+      "notes": "Universe prices were refreshed from delayed Stooq closes with latest market date 2026-05-15. They are better than the PDF proxies, but they are still not executable broker quotes."
     },
     {
       "claim": "A mathematically perfect allocation exists for generational wealth maximization.",
       "status": "contradicted",
       "confidence": 0.95,
-      "evidence": ["pdf-source"],
+      "evidence": [
+        "pdf-source"
+      ],
       "notes": "Unknown future distributions, path dependency, option-chain liquidity, and behavioral constraints make perfection impossible. The app exposes a probability-weighted decision model instead."
     }
   ],
@@ -511,9 +616,9 @@
       "bucket": "Memory IP",
       "layer": "HBM/DDR interface IP and chips",
       "region": "United States",
-      "price": 130,
-      "priceAsOf": "PDF snapshot May 2026",
-      "priceQuality": "proxy",
+      "price": 127.05,
+      "priceAsOf": "2026-05-15 Stooq delayed close",
+      "priceQuality": "stooq_delayed_close",
       "pdfBasket": true,
       "conviction": 88,
       "convexity": 82,
@@ -521,13 +626,54 @@
       "optionsLiquidity": 68,
       "valuationRisk": 64,
       "volatility": 48,
-      "moic": {"bear": 1.2, "base": 2.35, "bull": 4.15},
-      "impact": {"capex": 2.1, "hbm": 2.8, "asic": 0.8, "ethernet": 0.2, "taiwan": -0.5, "export": -0.4, "election": -0.2, "rates": -0.9, "grid": 0.2, "monetization": -1.1},
+      "moic": {
+        "bear": 1.2,
+        "base": 2.35,
+        "bull": 4.15
+      },
+      "impact": {
+        "capex": 2.1,
+        "hbm": 2.8,
+        "asic": 0.8,
+        "ethernet": 0.2,
+        "taiwan": -0.5,
+        "export": -0.4,
+        "election": -0.2,
+        "rates": -0.9,
+        "grid": 0.2,
+        "monetization": -1.1
+      },
       "thesis": "High-margin memory-interface IP and product revenue levered to HBM4E, MRDIMM, DDR5, and secure high-speed AI-server memory subsystems.",
       "mustBeTrue": "HBM4/HBM4E adoption broadens, memory-interface complexity rises, and Rambus keeps monetizing both IP and chips.",
-      "risks": ["Customer insourcing", "Platform timing slips", "AI sentiment already visible in the multiple"],
-      "catalysts": ["HBM4E customer/design-win updates", "Product revenue acceleration", "MRDIMM server ramps"],
-      "sources": ["rmbs-q1-2026", "rmbs-hbm4e", "pdf-source", "stocktwits-rmbs"]
+      "risks": [
+        "Customer insourcing",
+        "Platform timing slips",
+        "AI sentiment already visible in the multiple"
+      ],
+      "catalysts": [
+        "HBM4E customer/design-win updates",
+        "Product revenue acceleration",
+        "MRDIMM server ramps"
+      ],
+      "sources": [
+        "rmbs-q1-2026",
+        "rmbs-hbm4e",
+        "pdf-source",
+        "stocktwits-rmbs"
+      ],
+      "marketData": {
+        "source": "Stooq delayed daily quote",
+        "sourceUrl": "https://stooq.com/q/l/?s=rmbs.us&f=sd2t2ohlcv&h&e=csv",
+        "date": "2026-05-15",
+        "time": "22:00:19",
+        "open": 124.65,
+        "high": 129.74,
+        "low": 122.27,
+        "close": 127.05,
+        "volume": 2267648,
+        "priorSnapshotPrice": 130,
+        "refreshDate": "2026-05-16"
+      }
     },
     {
       "symbol": "FORM",
@@ -535,9 +681,9 @@
       "bucket": "Test",
       "layer": "HBM probe cards and semiconductor test",
       "region": "United States",
-      "price": 145,
-      "priceAsOf": "PDF snapshot May 2026",
-      "priceQuality": "proxy",
+      "price": 126.27,
+      "priceAsOf": "2026-05-15 Stooq delayed close",
+      "priceQuality": "stooq_delayed_close",
       "pdfBasket": true,
       "conviction": 84,
       "convexity": 77,
@@ -545,13 +691,52 @@
       "optionsLiquidity": 55,
       "valuationRisk": 61,
       "volatility": 45,
-      "moic": {"bear": 1.1, "base": 2.05, "bull": 3.25},
-      "impact": {"capex": 2.1, "hbm": 2.9, "asic": 1.0, "ethernet": 0.7, "taiwan": -0.7, "export": -0.7, "election": -0.2, "rates": -0.8, "grid": 0.1, "monetization": -1.2},
+      "moic": {
+        "bear": 1.1,
+        "base": 2.05,
+        "bull": 3.25
+      },
+      "impact": {
+        "capex": 2.1,
+        "hbm": 2.9,
+        "asic": 1,
+        "ethernet": 0.7,
+        "taiwan": -0.7,
+        "export": -0.7,
+        "election": -0.2,
+        "rates": -0.8,
+        "grid": 0.1,
+        "monetization": -1.2
+      },
       "thesis": "Direct test bottleneck exposure as HBM generations and AI networking silicon raise probe-card complexity and qualification value.",
       "mustBeTrue": "HBM test intensity rises faster than supply normalization and foundry/networking probe demand remains firm.",
-      "risks": ["Memory cyclicality", "Customer share shifts", "Peak-margin skepticism"],
-      "catalysts": ["DRAM/HBM revenue mix updates", "Foundry and logic demand commentary", "Q2 record revenue follow-through"],
-      "sources": ["form-q1-2026", "pdf-source"]
+      "risks": [
+        "Memory cyclicality",
+        "Customer share shifts",
+        "Peak-margin skepticism"
+      ],
+      "catalysts": [
+        "DRAM/HBM revenue mix updates",
+        "Foundry and logic demand commentary",
+        "Q2 record revenue follow-through"
+      ],
+      "sources": [
+        "form-q1-2026",
+        "pdf-source"
+      ],
+      "marketData": {
+        "source": "Stooq delayed daily quote",
+        "sourceUrl": "https://stooq.com/q/l/?s=form.us&f=sd2t2ohlcv&h&e=csv",
+        "date": "2026-05-15",
+        "time": "22:00:18",
+        "open": 121.41,
+        "high": 127.99,
+        "low": 119.3,
+        "close": 126.27,
+        "volume": 2739460,
+        "priorSnapshotPrice": 145,
+        "refreshDate": "2026-05-16"
+      }
     },
     {
       "symbol": "ONTO",
@@ -559,9 +744,9 @@
       "bucket": "Metrology",
       "layer": "Advanced packaging and process-control metrology",
       "region": "United States",
-      "price": 305,
-      "priceAsOf": "PDF snapshot May 2026",
-      "priceQuality": "proxy",
+      "price": 271.77,
+      "priceAsOf": "2026-05-15 Stooq delayed close",
+      "priceQuality": "stooq_delayed_close",
       "pdfBasket": true,
       "conviction": 85,
       "convexity": 76,
@@ -569,13 +754,52 @@
       "optionsLiquidity": 56,
       "valuationRisk": 62,
       "volatility": 44,
-      "moic": {"bear": 1.15, "base": 2.15, "bull": 3.55},
-      "impact": {"capex": 2.0, "hbm": 2.3, "asic": 1.2, "ethernet": 0.4, "taiwan": -0.8, "export": -0.6, "election": -0.2, "rates": -0.7, "grid": 0.0, "monetization": -1.0},
+      "moic": {
+        "bear": 1.15,
+        "base": 2.15,
+        "bull": 3.55
+      },
+      "impact": {
+        "capex": 2,
+        "hbm": 2.3,
+        "asic": 1.2,
+        "ethernet": 0.4,
+        "taiwan": -0.8,
+        "export": -0.6,
+        "election": -0.2,
+        "rates": -0.7,
+        "grid": 0,
+        "monetization": -1
+      },
       "thesis": "AI packaging, GAA logic, HBM, and advanced-node transitions all require tighter inspection and metrology process control.",
       "mustBeTrue": "Dragonfly G5 and Atlas G6 adoption keeps widening across HBM, 2.5D packaging, and next-gen logic customers.",
-      "risks": ["Semicap cyclicality", "Tool-adoption timing", "Advanced-packaging capex pull-forward"],
-      "catalysts": ["Dragonfly G5/HBM qualification updates", "Atlas G6 gate-all-around wins", "Asian factory ramp"],
-      "sources": ["onto-q1-2026", "pdf-source"]
+      "risks": [
+        "Semicap cyclicality",
+        "Tool-adoption timing",
+        "Advanced-packaging capex pull-forward"
+      ],
+      "catalysts": [
+        "Dragonfly G5/HBM qualification updates",
+        "Atlas G6 gate-all-around wins",
+        "Asian factory ramp"
+      ],
+      "sources": [
+        "onto-q1-2026",
+        "pdf-source"
+      ],
+      "marketData": {
+        "source": "Stooq delayed daily quote",
+        "sourceUrl": "https://stooq.com/q/l/?s=onto.us&f=sd2t2ohlcv&h&e=csv",
+        "date": "2026-05-15",
+        "time": "22:00:22",
+        "open": 267.32,
+        "high": 274.39,
+        "low": 263.4,
+        "close": 271.77,
+        "volume": 982621,
+        "priorSnapshotPrice": 305,
+        "refreshDate": "2026-05-16"
+      }
     },
     {
       "symbol": "CAMT",
@@ -583,9 +807,9 @@
       "bucket": "Inspection",
       "layer": "2D/3D inspection for advanced packaging and HBM",
       "region": "Israel",
-      "price": 203,
-      "priceAsOf": "PDF snapshot May 2026",
-      "priceQuality": "proxy",
+      "price": 168.35,
+      "priceAsOf": "2026-05-15 Stooq delayed close",
+      "priceQuality": "stooq_delayed_close",
       "pdfBasket": true,
       "conviction": 82,
       "convexity": 83,
@@ -593,13 +817,53 @@
       "optionsLiquidity": 50,
       "valuationRisk": 65,
       "volatility": 58,
-      "moic": {"bear": 1.05, "base": 2.25, "bull": 3.75},
-      "impact": {"capex": 2.0, "hbm": 2.6, "asic": 1.1, "ethernet": 0.2, "taiwan": -0.9, "export": -0.9, "election": -0.2, "rates": -0.8, "grid": 0.0, "monetization": -1.1},
+      "moic": {
+        "bear": 1.05,
+        "base": 2.25,
+        "bull": 3.75
+      },
+      "impact": {
+        "capex": 2,
+        "hbm": 2.6,
+        "asic": 1.1,
+        "ethernet": 0.2,
+        "taiwan": -0.9,
+        "export": -0.9,
+        "election": -0.2,
+        "rates": -0.8,
+        "grid": 0,
+        "monetization": -1.1
+      },
       "thesis": "Small but mission-critical inspection vendor levered to CoWoS-like AI packaging, OSAT demand, and AI IDM orders.",
       "mustBeTrue": "OSAT and IDM AI packaging orders remain durable rather than one-time capacity bursts.",
-      "risks": ["Israel/Middle East risk", "China exposure", "Large-tool competitors", "Order cadence normalization"],
-      "catalysts": ["New OSAT orders", "Hawk system deliveries", "Gross margin resilience"],
-      "sources": ["camtek-fy-2025", "pdf-source"]
+      "risks": [
+        "Israel/Middle East risk",
+        "China exposure",
+        "Large-tool competitors",
+        "Order cadence normalization"
+      ],
+      "catalysts": [
+        "New OSAT orders",
+        "Hawk system deliveries",
+        "Gross margin resilience"
+      ],
+      "sources": [
+        "camtek-fy-2025",
+        "pdf-source"
+      ],
+      "marketData": {
+        "source": "Stooq delayed daily quote",
+        "sourceUrl": "https://stooq.com/q/l/?s=camt.us&f=sd2t2ohlcv&h&e=csv",
+        "date": "2026-05-15",
+        "time": "22:00:17",
+        "open": 167.62,
+        "high": 172.12,
+        "low": 165.95,
+        "close": 168.35,
+        "volume": 533156,
+        "priorSnapshotPrice": 203,
+        "refreshDate": "2026-05-16"
+      }
     },
     {
       "symbol": "BESIY",
@@ -607,9 +871,9 @@
       "bucket": "Hybrid bonding",
       "layer": "Advanced assembly and hybrid bonding",
       "region": "Netherlands",
-      "price": 185,
-      "priceAsOf": "proxy May 2026",
-      "priceQuality": "proxy",
+      "price": 303.29,
+      "priceAsOf": "2026-05-15 Stooq delayed close",
+      "priceQuality": "stooq_delayed_close",
       "pdfBasket": true,
       "conviction": 76,
       "convexity": 84,
@@ -617,13 +881,52 @@
       "optionsLiquidity": 20,
       "valuationRisk": 66,
       "volatility": 50,
-      "moic": {"bear": 1.0, "base": 2.05, "bull": 4.0},
-      "impact": {"capex": 1.8, "hbm": 2.5, "asic": 1.3, "ethernet": 0.1, "taiwan": -0.7, "export": -0.5, "election": -0.1, "rates": -0.8, "grid": 0.0, "monetization": -1.0},
+      "moic": {
+        "bear": 1,
+        "base": 2.05,
+        "bull": 4
+      },
+      "impact": {
+        "capex": 1.8,
+        "hbm": 2.5,
+        "asic": 1.3,
+        "ethernet": 0.1,
+        "taiwan": -0.7,
+        "export": -0.5,
+        "election": -0.1,
+        "rates": -0.8,
+        "grid": 0,
+        "monetization": -1
+      },
       "thesis": "Hybrid bonding kicker if AI logic, HBM, and optics packaging move from qualification into broad commercial adoption.",
       "mustBeTrue": "Hybrid bonding adoption becomes structural across AI package roadmaps between 2027 and 2030.",
-      "risks": ["Timing slippage", "European/ADR liquidity", "Already recognized by semiconductor investors"],
-      "catalysts": ["Hybrid bonding order growth", "HBM4/customer qualifications", "AI packaging capex updates"],
-      "sources": ["besi-q1-2026", "pdf-source"]
+      "risks": [
+        "Timing slippage",
+        "European/ADR liquidity",
+        "Already recognized by semiconductor investors"
+      ],
+      "catalysts": [
+        "Hybrid bonding order growth",
+        "HBM4/customer qualifications",
+        "AI packaging capex updates"
+      ],
+      "sources": [
+        "besi-q1-2026",
+        "pdf-source"
+      ],
+      "marketData": {
+        "source": "Stooq delayed daily quote",
+        "sourceUrl": "https://stooq.com/q/l/?s=besiy.us&f=sd2t2ohlcv&h&e=csv",
+        "date": "2026-05-15",
+        "time": "21:54:00",
+        "open": 300,
+        "high": 306.54,
+        "low": 297.74,
+        "close": 303.29,
+        "volume": 902,
+        "priorSnapshotPrice": 185,
+        "refreshDate": "2026-05-16"
+      }
     },
     {
       "symbol": "CRDO",
@@ -631,9 +934,9 @@
       "bucket": "Connectivity",
       "layer": "AEC, SerDes, optical DSP, scale-out networking",
       "region": "United States",
-      "price": 198,
-      "priceAsOf": "PDF snapshot May 2026",
-      "priceQuality": "proxy",
+      "price": 172.17,
+      "priceAsOf": "2026-05-15 Stooq delayed close",
+      "priceQuality": "stooq_delayed_close",
       "pdfBasket": true,
       "conviction": 78,
       "convexity": 88,
@@ -641,13 +944,53 @@
       "optionsLiquidity": 78,
       "valuationRisk": 82,
       "volatility": 72,
-      "moic": {"bear": 0.75, "base": 1.85, "bull": 3.35},
-      "impact": {"capex": 2.3, "hbm": 0.2, "asic": 1.0, "ethernet": 2.9, "taiwan": -0.4, "export": -0.5, "election": -0.2, "rates": -1.4, "grid": 0.1, "monetization": -1.6},
+      "moic": {
+        "bear": 0.75,
+        "base": 1.85,
+        "bull": 3.35
+      },
+      "impact": {
+        "capex": 2.3,
+        "hbm": 0.2,
+        "asic": 1,
+        "ethernet": 2.9,
+        "taiwan": -0.4,
+        "export": -0.5,
+        "election": -0.2,
+        "rates": -1.4,
+        "grid": 0.1,
+        "monetization": -1.6
+      },
       "thesis": "High-convexity Ethernet/AEC way to own AI scale-out if copper remains important and optics is additive rather than cannibalizing.",
       "mustBeTrue": "AECs keep a meaningful role in scale-out networking and Credo broadens beyond largest customers.",
-      "risks": ["Customer concentration", "CPO/optical substitution", "Multiple already embeds exceptional growth"],
-      "catalysts": ["Fifth hyperscaler contribution", "Optical portfolio revenue", "Customer concentration improvement"],
-      "sources": ["crdo-q3-2026", "pdf-source", "reddit-crdo-options"]
+      "risks": [
+        "Customer concentration",
+        "CPO/optical substitution",
+        "Multiple already embeds exceptional growth"
+      ],
+      "catalysts": [
+        "Fifth hyperscaler contribution",
+        "Optical portfolio revenue",
+        "Customer concentration improvement"
+      ],
+      "sources": [
+        "crdo-q3-2026",
+        "pdf-source",
+        "reddit-crdo-options"
+      ],
+      "marketData": {
+        "source": "Stooq delayed daily quote",
+        "sourceUrl": "https://stooq.com/q/l/?s=crdo.us&f=sd2t2ohlcv&h&e=csv",
+        "date": "2026-05-15",
+        "time": "22:00:19",
+        "open": 177.24,
+        "high": 178.46,
+        "low": 171.02,
+        "close": 172.17,
+        "volume": 5528848,
+        "priorSnapshotPrice": 198,
+        "refreshDate": "2026-05-16"
+      }
     },
     {
       "symbol": "ALAB",
@@ -655,9 +998,9 @@
       "bucket": "Connectivity",
       "layer": "PCIe/CXL/AI fabric connectivity",
       "region": "United States",
-      "price": 180,
-      "priceAsOf": "proxy May 2026",
-      "priceQuality": "proxy",
+      "price": 232.68,
+      "priceAsOf": "2026-05-15 Stooq delayed close",
+      "priceQuality": "stooq_delayed_close",
       "pdfBasket": true,
       "conviction": 80,
       "convexity": 80,
@@ -665,13 +1008,53 @@
       "optionsLiquidity": 75,
       "valuationRisk": 86,
       "volatility": 70,
-      "moic": {"bear": 0.8, "base": 1.7, "bull": 2.9},
-      "impact": {"capex": 2.2, "hbm": 0.4, "asic": 0.9, "ethernet": 1.1, "taiwan": -0.5, "export": -0.5, "election": -0.2, "rates": -1.5, "grid": 0.1, "monetization": -1.7},
+      "moic": {
+        "bear": 0.8,
+        "base": 1.7,
+        "bull": 2.9
+      },
+      "impact": {
+        "capex": 2.2,
+        "hbm": 0.4,
+        "asic": 0.9,
+        "ethernet": 1.1,
+        "taiwan": -0.5,
+        "export": -0.5,
+        "election": -0.2,
+        "rates": -1.5,
+        "grid": 0.1,
+        "monetization": -1.7
+      },
       "thesis": "Exceptionally high-margin AI connectivity franchise, but asymmetry is muted by public-market recognition and customer concentration.",
       "mustBeTrue": "PCIe 6/CXL/NVLink Fusion-style ecosystems keep expanding and Astera avoids insourcing pressure.",
-      "risks": ["Customer concentration", "Valuation", "Protocol shift", "Insourcing"],
-      "catalysts": ["PCIe 6 ramps", "New Aries/Taurus/Scorpio programs", "Customer diversification"],
-      "sources": ["alab-q1-2026", "pdf-source"]
+      "risks": [
+        "Customer concentration",
+        "Valuation",
+        "Protocol shift",
+        "Insourcing"
+      ],
+      "catalysts": [
+        "PCIe 6 ramps",
+        "New Aries/Taurus/Scorpio programs",
+        "Customer diversification"
+      ],
+      "sources": [
+        "alab-q1-2026",
+        "pdf-source"
+      ],
+      "marketData": {
+        "source": "Stooq delayed daily quote",
+        "sourceUrl": "https://stooq.com/q/l/?s=alab.us&f=sd2t2ohlcv&h&e=csv",
+        "date": "2026-05-15",
+        "time": "22:00:19",
+        "open": 216.5,
+        "high": 239.77,
+        "low": 210.42,
+        "close": 232.68,
+        "volume": 5941753,
+        "priorSnapshotPrice": 180,
+        "refreshDate": "2026-05-16"
+      }
     },
     {
       "symbol": "CLS",
@@ -679,9 +1062,9 @@
       "bucket": "Systems",
       "layer": "Hyperscaler AI compute and networking integration",
       "region": "Canada",
-      "price": 418,
-      "priceAsOf": "PDF snapshot May 2026",
-      "priceQuality": "proxy",
+      "price": 358.55,
+      "priceAsOf": "2026-05-15 Stooq delayed close",
+      "priceQuality": "stooq_delayed_close",
       "pdfBasket": true,
       "conviction": 83,
       "convexity": 72,
@@ -689,13 +1072,53 @@
       "optionsLiquidity": 62,
       "valuationRisk": 72,
       "volatility": 55,
-      "moic": {"bear": 0.95, "base": 1.75, "bull": 2.75},
-      "impact": {"capex": 2.4, "hbm": 0.2, "asic": 1.0, "ethernet": 1.1, "taiwan": -0.3, "export": -0.4, "election": -0.2, "rates": -1.0, "grid": 0.3, "monetization": -1.4},
+      "moic": {
+        "bear": 0.95,
+        "base": 1.75,
+        "bull": 2.75
+      },
+      "impact": {
+        "capex": 2.4,
+        "hbm": 0.2,
+        "asic": 1,
+        "ethernet": 1.1,
+        "taiwan": -0.3,
+        "export": -0.4,
+        "election": -0.2,
+        "rates": -1,
+        "grid": 0.3,
+        "monetization": -1.4
+      },
       "thesis": "Mis-bucketed EMS name with hyperscaler AI systems, networking programs, and co-packaged-optics switch exposure.",
       "mustBeTrue": "Celestica keeps winning higher-value programs, not just low-margin build-to-print volume.",
-      "risks": ["Lower gross margins", "ODM/OEM share shifts", "Supplier constraints", "Customer concentration"],
-      "catalysts": ["AI compute/networking revenue growth", "CPO switch ramp visibility", "Margin expansion"],
-      "sources": ["cls-q1-2026", "pdf-source"]
+      "risks": [
+        "Lower gross margins",
+        "ODM/OEM share shifts",
+        "Supplier constraints",
+        "Customer concentration"
+      ],
+      "catalysts": [
+        "AI compute/networking revenue growth",
+        "CPO switch ramp visibility",
+        "Margin expansion"
+      ],
+      "sources": [
+        "cls-q1-2026",
+        "pdf-source"
+      ],
+      "marketData": {
+        "source": "Stooq delayed daily quote",
+        "sourceUrl": "https://stooq.com/q/l/?s=cls.us&f=sd2t2ohlcv&h&e=csv",
+        "date": "2026-05-15",
+        "time": "22:00:22",
+        "open": 367.53,
+        "high": 367.53,
+        "low": 357.55,
+        "close": 358.55,
+        "volume": 1904064,
+        "priorSnapshotPrice": 418,
+        "refreshDate": "2026-05-16"
+      }
     },
     {
       "symbol": "MOD",
@@ -703,9 +1126,9 @@
       "bucket": "Thermal",
       "layer": "Data-center cooling, CDUs, chillers, CRAH/CRAC",
       "region": "United States",
-      "price": 274,
-      "priceAsOf": "PDF snapshot May 2026",
-      "priceQuality": "proxy",
+      "price": 271.26,
+      "priceAsOf": "2026-05-15 Stooq delayed close",
+      "priceQuality": "stooq_delayed_close",
       "pdfBasket": true,
       "conviction": 76,
       "convexity": 73,
@@ -713,13 +1136,52 @@
       "optionsLiquidity": 54,
       "valuationRisk": 69,
       "volatility": 52,
-      "moic": {"bear": 0.95, "base": 1.75, "bull": 2.9},
-      "impact": {"capex": 1.8, "hbm": 0.0, "asic": 0.1, "ethernet": 0.0, "taiwan": 0.5, "export": 0.2, "election": -0.2, "rates": -0.7, "grid": 2.7, "monetization": -1.1},
+      "moic": {
+        "bear": 0.95,
+        "base": 1.75,
+        "bull": 2.9
+      },
+      "impact": {
+        "capex": 1.8,
+        "hbm": 0,
+        "asic": 0.1,
+        "ethernet": 0,
+        "taiwan": 0.5,
+        "export": 0.2,
+        "election": -0.2,
+        "rates": -0.7,
+        "grid": 2.7,
+        "monetization": -1.1
+      },
       "thesis": "Less obvious thermal play with hyperscale/colocation cooling growth and a path toward higher-quality climate-solutions mix.",
       "mustBeTrue": "Liquid cooling and high-density thermal management become structural rather than a temporary buildout wave.",
-      "risks": ["Capacity execution", "Competition from larger HVAC/data-center players", "Cyclical project timing"],
-      "catalysts": ["Data-center cooling orders", "Climate Solutions margin", "Capacity expansion proof"],
-      "sources": ["mod-2025-10k", "pdf-source"]
+      "risks": [
+        "Capacity execution",
+        "Competition from larger HVAC/data-center players",
+        "Cyclical project timing"
+      ],
+      "catalysts": [
+        "Data-center cooling orders",
+        "Climate Solutions margin",
+        "Capacity expansion proof"
+      ],
+      "sources": [
+        "mod-2025-10k",
+        "pdf-source"
+      ],
+      "marketData": {
+        "source": "Stooq delayed daily quote",
+        "sourceUrl": "https://stooq.com/q/l/?s=mod.us&f=sd2t2ohlcv&h&e=csv",
+        "date": "2026-05-15",
+        "time": "22:00:22",
+        "open": 282.14,
+        "high": 283.83,
+        "low": 266.31,
+        "close": 271.26,
+        "volume": 1213500,
+        "priorSnapshotPrice": 274,
+        "refreshDate": "2026-05-16"
+      }
     },
     {
       "symbol": "VRT",
@@ -727,9 +1189,9 @@
       "bucket": "Power/Thermal",
       "layer": "Critical digital infrastructure, power and cooling",
       "region": "United States",
-      "price": 359,
-      "priceAsOf": "PDF snapshot May 2026",
-      "priceQuality": "proxy",
+      "price": 370.94,
+      "priceAsOf": "2026-05-15 Stooq delayed close",
+      "priceQuality": "stooq_delayed_close",
       "pdfBasket": true,
       "conviction": 82,
       "convexity": 62,
@@ -737,13 +1199,54 @@
       "optionsLiquidity": 84,
       "valuationRisk": 82,
       "volatility": 58,
-      "moic": {"bear": 0.85, "base": 1.45, "bull": 2.05},
-      "impact": {"capex": 2.0, "hbm": 0.0, "asic": 0.1, "ethernet": 0.0, "taiwan": 0.6, "export": 0.1, "election": -0.1, "rates": -1.1, "grid": 3.0, "monetization": -1.5},
+      "moic": {
+        "bear": 0.85,
+        "base": 1.45,
+        "bull": 2.05
+      },
+      "impact": {
+        "capex": 2,
+        "hbm": 0,
+        "asic": 0.1,
+        "ethernet": 0,
+        "taiwan": 0.6,
+        "export": 0.1,
+        "election": -0.1,
+        "rates": -1.1,
+        "grid": 3,
+        "monetization": -1.5
+      },
       "thesis": "Clean, liquid way to own AI-factory power and thermal complexity, but the market already recognizes the story.",
       "mustBeTrue": "Backlog converts, densification persists, and higher-value integrated solutions/services keep raising mix quality.",
-      "risks": ["Valuation", "Capex digestion", "Cooling commoditization", "Backlog conversion timing"],
-      "catalysts": ["Backlog conversion", "Liquid cooling orders", "Higher-voltage DC architecture updates"],
-      "sources": ["vrt-q4-2025", "iea-dc-2025", "pdf-source"]
+      "risks": [
+        "Valuation",
+        "Capex digestion",
+        "Cooling commoditization",
+        "Backlog conversion timing"
+      ],
+      "catalysts": [
+        "Backlog conversion",
+        "Liquid cooling orders",
+        "Higher-voltage DC architecture updates"
+      ],
+      "sources": [
+        "vrt-q4-2025",
+        "iea-dc-2025",
+        "pdf-source"
+      ],
+      "marketData": {
+        "source": "Stooq delayed daily quote",
+        "sourceUrl": "https://stooq.com/q/l/?s=vrt.us&f=sd2t2ohlcv&h&e=csv",
+        "date": "2026-05-15",
+        "time": "22:00:22",
+        "open": 364.31,
+        "high": 373.91,
+        "low": 356.27,
+        "close": 370.94,
+        "volume": 4871154,
+        "priorSnapshotPrice": 359,
+        "refreshDate": "2026-05-16"
+      }
     },
     {
       "symbol": "NVDA",
@@ -751,9 +1254,9 @@
       "bucket": "Compute",
       "layer": "GPU accelerator platform",
       "region": "United States",
-      "price": 195,
-      "priceAsOf": "proxy May 2026",
-      "priceQuality": "proxy",
+      "price": 225.32,
+      "priceAsOf": "2026-05-15 Stooq delayed close",
+      "priceQuality": "stooq_delayed_close",
       "pdfBasket": false,
       "conviction": 86,
       "convexity": 58,
@@ -761,13 +1264,53 @@
       "optionsLiquidity": 98,
       "valuationRisk": 83,
       "volatility": 50,
-      "moic": {"bear": 0.8, "base": 1.45, "bull": 2.1},
-      "impact": {"capex": 2.8, "hbm": 1.1, "asic": -1.4, "ethernet": -0.3, "taiwan": -1.5, "export": -1.2, "election": -0.3, "rates": -1.2, "grid": -0.4, "monetization": -2.0},
+      "moic": {
+        "bear": 0.8,
+        "base": 1.45,
+        "bull": 2.1
+      },
+      "impact": {
+        "capex": 2.8,
+        "hbm": 1.1,
+        "asic": -1.4,
+        "ethernet": -0.3,
+        "taiwan": -1.5,
+        "export": -1.2,
+        "election": -0.3,
+        "rates": -1.2,
+        "grid": -0.4,
+        "monetization": -2
+      },
       "thesis": "Highest-quality direct AI compute leader, included as benchmark/hedge against over-rotating into secondary bottlenecks.",
       "mustBeTrue": "GPU demand remains dominant enough that margins and ecosystem lock-in offset ASIC pressure.",
-      "risks": ["ASIC substitution", "Export controls", "Gross margin normalization", "Taiwan concentration"],
-      "catalysts": ["Blackwell/Rubin demand", "Networking attach", "Sovereign AI orders"],
-      "sources": ["tsmc-ar-2025", "iea-energy-ai"]
+      "risks": [
+        "ASIC substitution",
+        "Export controls",
+        "Gross margin normalization",
+        "Taiwan concentration"
+      ],
+      "catalysts": [
+        "Blackwell/Rubin demand",
+        "Networking attach",
+        "Sovereign AI orders"
+      ],
+      "sources": [
+        "tsmc-ar-2025",
+        "iea-energy-ai"
+      ],
+      "marketData": {
+        "source": "Stooq delayed daily quote",
+        "sourceUrl": "https://stooq.com/q/l/?s=nvda.us&f=sd2t2ohlcv&h&e=csv",
+        "date": "2026-05-15",
+        "time": "22:00:19",
+        "open": 229.76,
+        "high": 231.5,
+        "low": 224.24,
+        "close": 225.32,
+        "volume": 180977639,
+        "priorSnapshotPrice": 195,
+        "refreshDate": "2026-05-16"
+      }
     },
     {
       "symbol": "AVGO",
@@ -775,9 +1318,9 @@
       "bucket": "ASIC/Networking",
       "layer": "Custom AI ASICs, networking, packaging ecosystem",
       "region": "United States",
-      "price": 360,
-      "priceAsOf": "proxy May 2026",
-      "priceQuality": "proxy",
+      "price": 425.19,
+      "priceAsOf": "2026-05-15 Stooq delayed close",
+      "priceQuality": "stooq_delayed_close",
       "pdfBasket": false,
       "conviction": 84,
       "convexity": 62,
@@ -785,13 +1328,51 @@
       "optionsLiquidity": 94,
       "valuationRisk": 74,
       "volatility": 45,
-      "moic": {"bear": 0.85, "base": 1.55, "bull": 2.35},
-      "impact": {"capex": 2.4, "hbm": 1.0, "asic": 2.7, "ethernet": 1.2, "taiwan": -1.1, "export": -0.7, "election": -0.2, "rates": -0.9, "grid": -0.1, "monetization": -1.5},
+      "moic": {
+        "bear": 0.85,
+        "base": 1.55,
+        "bull": 2.35
+      },
+      "impact": {
+        "capex": 2.4,
+        "hbm": 1,
+        "asic": 2.7,
+        "ethernet": 1.2,
+        "taiwan": -1.1,
+        "export": -0.7,
+        "election": -0.2,
+        "rates": -0.9,
+        "grid": -0.1,
+        "monetization": -1.5
+      },
       "thesis": "Best large-cap hedge if value migrates from merchant GPUs to hyperscaler custom silicon and scale-out networking.",
       "mustBeTrue": "Custom ASIC attach and AI networking revenue continue compounding without margin compression.",
-      "risks": ["Customer concentration", "VMware integration/multiple", "ASIC program timing"],
-      "catalysts": ["AI ASIC backlog", "Networking growth", "Large hyperscaler design wins"],
-      "sources": ["tsmc-ar-2025"]
+      "risks": [
+        "Customer concentration",
+        "VMware integration/multiple",
+        "ASIC program timing"
+      ],
+      "catalysts": [
+        "AI ASIC backlog",
+        "Networking growth",
+        "Large hyperscaler design wins"
+      ],
+      "sources": [
+        "tsmc-ar-2025"
+      ],
+      "marketData": {
+        "source": "Stooq delayed daily quote",
+        "sourceUrl": "https://stooq.com/q/l/?s=avgo.us&f=sd2t2ohlcv&h&e=csv",
+        "date": "2026-05-15",
+        "time": "22:00:19",
+        "open": 432.81,
+        "high": 432.81,
+        "low": 419.8,
+        "close": 425.19,
+        "volume": 18957093,
+        "priorSnapshotPrice": 360,
+        "refreshDate": "2026-05-16"
+      }
     },
     {
       "symbol": "TSM",
@@ -799,9 +1380,9 @@
       "bucket": "Foundry",
       "layer": "Leading-edge foundry and advanced packaging",
       "region": "Taiwan",
-      "price": 315,
-      "priceAsOf": "proxy May 2026",
-      "priceQuality": "proxy",
+      "price": 404.35,
+      "priceAsOf": "2026-05-15 Stooq delayed close",
+      "priceQuality": "stooq_delayed_close",
       "pdfBasket": false,
       "conviction": 86,
       "convexity": 54,
@@ -809,13 +1390,52 @@
       "optionsLiquidity": 91,
       "valuationRisk": 62,
       "volatility": 38,
-      "moic": {"bear": 0.8, "base": 1.45, "bull": 2.2},
-      "impact": {"capex": 2.6, "hbm": 1.4, "asic": 1.6, "ethernet": 0.3, "taiwan": -3.0, "export": -0.9, "election": -0.3, "rates": -0.7, "grid": -0.2, "monetization": -1.3},
+      "moic": {
+        "bear": 0.8,
+        "base": 1.45,
+        "bull": 2.2
+      },
+      "impact": {
+        "capex": 2.6,
+        "hbm": 1.4,
+        "asic": 1.6,
+        "ethernet": 0.3,
+        "taiwan": -3,
+        "export": -0.9,
+        "election": -0.3,
+        "rates": -0.7,
+        "grid": -0.2,
+        "monetization": -1.3
+      },
       "thesis": "Foundational AI manufacturing bottleneck, but geopolitical concentration makes it a scenario-sensitive core exposure.",
       "mustBeTrue": "Leading-edge and CoWoS/SoIC demand keeps outrunning capacity without a Taiwan shock.",
-      "risks": ["Taiwan conflict/blockade", "Export controls", "Customer cyclicality"],
-      "catalysts": ["2nm ramp", "CoWoS expansion", "Arizona/sovereign capacity milestones"],
-      "sources": ["tsmc-ar-2025", "iea-energy-ai"]
+      "risks": [
+        "Taiwan conflict/blockade",
+        "Export controls",
+        "Customer cyclicality"
+      ],
+      "catalysts": [
+        "2nm ramp",
+        "CoWoS expansion",
+        "Arizona/sovereign capacity milestones"
+      ],
+      "sources": [
+        "tsmc-ar-2025",
+        "iea-energy-ai"
+      ],
+      "marketData": {
+        "source": "Stooq delayed daily quote",
+        "sourceUrl": "https://stooq.com/q/l/?s=tsm.us&f=sd2t2ohlcv&h&e=csv",
+        "date": "2026-05-15",
+        "time": "22:00:22",
+        "open": 406.5,
+        "high": 409.87,
+        "low": 398.83,
+        "close": 404.35,
+        "volume": 11868600,
+        "priorSnapshotPrice": 315,
+        "refreshDate": "2026-05-16"
+      }
     },
     {
       "symbol": "ASML",
@@ -823,9 +1443,9 @@
       "bucket": "Semicap",
       "layer": "EUV lithography",
       "region": "Netherlands",
-      "price": 1050,
-      "priceAsOf": "proxy May 2026",
-      "priceQuality": "proxy",
+      "price": 1501.81,
+      "priceAsOf": "2026-05-15 Stooq delayed close",
+      "priceQuality": "stooq_delayed_close",
       "pdfBasket": false,
       "conviction": 80,
       "convexity": 47,
@@ -833,13 +1453,51 @@
       "optionsLiquidity": 78,
       "valuationRisk": 61,
       "volatility": 34,
-      "moic": {"bear": 0.85, "base": 1.35, "bull": 1.9},
-      "impact": {"capex": 1.8, "hbm": 0.5, "asic": 1.1, "ethernet": 0.0, "taiwan": -1.0, "export": -1.5, "election": -0.2, "rates": -0.7, "grid": 0.0, "monetization": -0.9},
+      "moic": {
+        "bear": 0.85,
+        "base": 1.35,
+        "bull": 1.9
+      },
+      "impact": {
+        "capex": 1.8,
+        "hbm": 0.5,
+        "asic": 1.1,
+        "ethernet": 0,
+        "taiwan": -1,
+        "export": -1.5,
+        "election": -0.2,
+        "rates": -0.7,
+        "grid": 0,
+        "monetization": -0.9
+      },
       "thesis": "Quality exposure to leading-edge foundry/memory capex, more durable than explosive.",
       "mustBeTrue": "EUV intensity rises with leading-edge AI silicon and export controls do not materially impair backlog.",
-      "risks": ["China restrictions", "Cyclicality", "Large-cap valuation"],
-      "catalysts": ["High-NA EUV updates", "Memory/foundry capex outlook", "Order normalization"],
-      "sources": ["tsmc-ar-2025"]
+      "risks": [
+        "China restrictions",
+        "Cyclicality",
+        "Large-cap valuation"
+      ],
+      "catalysts": [
+        "High-NA EUV updates",
+        "Memory/foundry capex outlook",
+        "Order normalization"
+      ],
+      "sources": [
+        "tsmc-ar-2025"
+      ],
+      "marketData": {
+        "source": "Stooq delayed daily quote",
+        "sourceUrl": "https://stooq.com/q/l/?s=asml.us&f=sd2t2ohlcv&h&e=csv",
+        "date": "2026-05-15",
+        "time": "22:00:19",
+        "open": 1511.74,
+        "high": 1527.25,
+        "low": 1486.64,
+        "close": 1501.81,
+        "volume": 1807381,
+        "priorSnapshotPrice": 1050,
+        "refreshDate": "2026-05-16"
+      }
     },
     {
       "symbol": "AMAT",
@@ -847,9 +1505,9 @@
       "bucket": "Semicap",
       "layer": "Deposition, materials engineering, packaging tools",
       "region": "United States",
-      "price": 245,
-      "priceAsOf": "proxy May 2026",
-      "priceQuality": "proxy",
+      "price": 436.62,
+      "priceAsOf": "2026-05-15 Stooq delayed close",
+      "priceQuality": "stooq_delayed_close",
       "pdfBasket": false,
       "conviction": 75,
       "convexity": 51,
@@ -857,13 +1515,51 @@
       "optionsLiquidity": 86,
       "valuationRisk": 60,
       "volatility": 36,
-      "moic": {"bear": 0.9, "base": 1.35, "bull": 1.9},
-      "impact": {"capex": 1.7, "hbm": 1.0, "asic": 1.0, "ethernet": 0.0, "taiwan": -0.7, "export": -1.2, "election": -0.2, "rates": -0.6, "grid": 0.0, "monetization": -0.9},
+      "moic": {
+        "bear": 0.9,
+        "base": 1.35,
+        "bull": 1.9
+      },
+      "impact": {
+        "capex": 1.7,
+        "hbm": 1,
+        "asic": 1,
+        "ethernet": 0,
+        "taiwan": -0.7,
+        "export": -1.2,
+        "election": -0.2,
+        "rates": -0.6,
+        "grid": 0,
+        "monetization": -0.9
+      },
       "thesis": "Broad semicap exposure to AI memory, foundry, and advanced packaging, useful as a lower-idiosyncrasy ballast.",
       "mustBeTrue": "Semicap spending remains strong across HBM, advanced logic, and packaging.",
-      "risks": ["Export controls", "Memory cycle", "Broad semicap multiple compression"],
-      "catalysts": ["DRAM record commentary", "Advanced packaging orders", "China restriction clarity"],
-      "sources": ["tsmc-ar-2025"]
+      "risks": [
+        "Export controls",
+        "Memory cycle",
+        "Broad semicap multiple compression"
+      ],
+      "catalysts": [
+        "DRAM record commentary",
+        "Advanced packaging orders",
+        "China restriction clarity"
+      ],
+      "sources": [
+        "tsmc-ar-2025"
+      ],
+      "marketData": {
+        "source": "Stooq delayed daily quote",
+        "sourceUrl": "https://stooq.com/q/l/?s=amat.us&f=sd2t2ohlcv&h&e=csv",
+        "date": "2026-05-15",
+        "time": "22:00:19",
+        "open": 428.42,
+        "high": 444.5,
+        "low": 421.56,
+        "close": 436.62,
+        "volume": 12768709,
+        "priorSnapshotPrice": 245,
+        "refreshDate": "2026-05-16"
+      }
     },
     {
       "symbol": "ANET",
@@ -871,9 +1567,9 @@
       "bucket": "Networking",
       "layer": "Cloud Ethernet switching",
       "region": "United States",
-      "price": 136,
-      "priceAsOf": "proxy May 2026",
-      "priceQuality": "proxy",
+      "price": 141.97,
+      "priceAsOf": "2026-05-15 Stooq delayed close",
+      "priceQuality": "stooq_delayed_close",
       "pdfBasket": false,
       "conviction": 78,
       "convexity": 56,
@@ -881,13 +1577,51 @@
       "optionsLiquidity": 88,
       "valuationRisk": 67,
       "volatility": 42,
-      "moic": {"bear": 0.85, "base": 1.45, "bull": 2.15},
-      "impact": {"capex": 2.1, "hbm": 0.0, "asic": 0.5, "ethernet": 2.6, "taiwan": -0.2, "export": -0.2, "election": -0.1, "rates": -0.8, "grid": 0.0, "monetization": -1.2},
+      "moic": {
+        "bear": 0.85,
+        "base": 1.45,
+        "bull": 2.15
+      },
+      "impact": {
+        "capex": 2.1,
+        "hbm": 0,
+        "asic": 0.5,
+        "ethernet": 2.6,
+        "taiwan": -0.2,
+        "export": -0.2,
+        "election": -0.1,
+        "rates": -0.8,
+        "grid": 0,
+        "monetization": -1.2
+      },
       "thesis": "Higher-quality, less-hidden Ethernet AI networking exposure.",
       "mustBeTrue": "Ethernet continues taking share in scale-out AI clusters and cloud customers keep refreshing networks.",
-      "risks": ["Hyperscaler concentration", "White-box pressure", "Valuation"],
-      "catalysts": ["AI networking revenue mix", "800G/1.6T adoption", "Cloud capex updates"],
-      "sources": ["iea-energy-ai"]
+      "risks": [
+        "Hyperscaler concentration",
+        "White-box pressure",
+        "Valuation"
+      ],
+      "catalysts": [
+        "AI networking revenue mix",
+        "800G/1.6T adoption",
+        "Cloud capex updates"
+      ],
+      "sources": [
+        "iea-energy-ai"
+      ],
+      "marketData": {
+        "source": "Stooq delayed daily quote",
+        "sourceUrl": "https://stooq.com/q/l/?s=anet.us&f=sd2t2ohlcv&h&e=csv",
+        "date": "2026-05-15",
+        "time": "22:00:23",
+        "open": 144.99,
+        "high": 145.9,
+        "low": 141.78,
+        "close": 141.97,
+        "volume": 10833005,
+        "priorSnapshotPrice": 136,
+        "refreshDate": "2026-05-16"
+      }
     },
     {
       "symbol": "MRVL",
@@ -895,9 +1629,9 @@
       "bucket": "ASIC/Networking",
       "layer": "Custom silicon, optical DSP, networking",
       "region": "United States",
-      "price": 105,
-      "priceAsOf": "proxy May 2026",
-      "priceQuality": "proxy",
+      "price": 176.89,
+      "priceAsOf": "2026-05-15 Stooq delayed close",
+      "priceQuality": "stooq_delayed_close",
       "pdfBasket": false,
       "conviction": 76,
       "convexity": 69,
@@ -905,13 +1639,51 @@
       "optionsLiquidity": 89,
       "valuationRisk": 70,
       "volatility": 52,
-      "moic": {"bear": 0.75, "base": 1.55, "bull": 2.65},
-      "impact": {"capex": 2.0, "hbm": 0.4, "asic": 2.1, "ethernet": 1.0, "taiwan": -0.6, "export": -0.5, "election": -0.2, "rates": -1.0, "grid": 0.0, "monetization": -1.3},
+      "moic": {
+        "bear": 0.75,
+        "base": 1.55,
+        "bull": 2.65
+      },
+      "impact": {
+        "capex": 2,
+        "hbm": 0.4,
+        "asic": 2.1,
+        "ethernet": 1,
+        "taiwan": -0.6,
+        "export": -0.5,
+        "election": -0.2,
+        "rates": -1,
+        "grid": 0,
+        "monetization": -1.3
+      },
       "thesis": "Liquid custom silicon and optical DSP exposure if hyperscaler ASICs scale faster.",
       "mustBeTrue": "Custom AI silicon wins mature into material revenue and optical DSP demand stays strong.",
-      "risks": ["Execution timing", "Competition", "Multiple"],
-      "catalysts": ["Custom silicon ramps", "Optical DSP demand", "Customer disclosures"],
-      "sources": ["tsmc-ar-2025"]
+      "risks": [
+        "Execution timing",
+        "Competition",
+        "Multiple"
+      ],
+      "catalysts": [
+        "Custom silicon ramps",
+        "Optical DSP demand",
+        "Customer disclosures"
+      ],
+      "sources": [
+        "tsmc-ar-2025"
+      ],
+      "marketData": {
+        "source": "Stooq delayed daily quote",
+        "sourceUrl": "https://stooq.com/q/l/?s=mrvl.us&f=sd2t2ohlcv&h&e=csv",
+        "date": "2026-05-15",
+        "time": "22:00:19",
+        "open": 173.9,
+        "high": 182.14,
+        "low": 173.34,
+        "close": 176.89,
+        "volume": 24757318,
+        "priorSnapshotPrice": 105,
+        "refreshDate": "2026-05-16"
+      }
     },
     {
       "symbol": "COHR",
@@ -919,9 +1691,9 @@
       "bucket": "Optics",
       "layer": "Lasers and optical components",
       "region": "United States",
-      "price": 125,
-      "priceAsOf": "proxy May 2026",
-      "priceQuality": "proxy",
+      "price": 382.45,
+      "priceAsOf": "2026-05-15 Stooq delayed close",
+      "priceQuality": "stooq_delayed_close",
       "pdfBasket": false,
       "conviction": 70,
       "convexity": 73,
@@ -929,13 +1701,51 @@
       "optionsLiquidity": 70,
       "valuationRisk": 63,
       "volatility": 58,
-      "moic": {"bear": 0.7, "base": 1.55, "bull": 2.85},
-      "impact": {"capex": 1.7, "hbm": 0.0, "asic": 0.5, "ethernet": -1.4, "taiwan": -0.3, "export": -0.4, "election": -0.1, "rates": -0.8, "grid": 0.0, "monetization": -1.1},
+      "moic": {
+        "bear": 0.7,
+        "base": 1.55,
+        "bull": 2.85
+      },
+      "impact": {
+        "capex": 1.7,
+        "hbm": 0,
+        "asic": 0.5,
+        "ethernet": -1.4,
+        "taiwan": -0.3,
+        "export": -0.4,
+        "election": -0.1,
+        "rates": -0.8,
+        "grid": 0,
+        "monetization": -1.1
+      },
       "thesis": "Optics hedge if copper/AEC share loses to optical links and CPO-related architectures faster than expected.",
       "mustBeTrue": "Optical scale-out content rises materially and margin execution improves.",
-      "risks": ["Cyclical telecom legacy", "Execution", "Pricing pressure"],
-      "catalysts": ["AI transceiver demand", "Margin recovery", "CPO ecosystem signals"],
-      "sources": ["pdf-source"]
+      "risks": [
+        "Cyclical telecom legacy",
+        "Execution",
+        "Pricing pressure"
+      ],
+      "catalysts": [
+        "AI transceiver demand",
+        "Margin recovery",
+        "CPO ecosystem signals"
+      ],
+      "sources": [
+        "pdf-source"
+      ],
+      "marketData": {
+        "source": "Stooq delayed daily quote",
+        "sourceUrl": "https://stooq.com/q/l/?s=cohr.us&f=sd2t2ohlcv&h&e=csv",
+        "date": "2026-05-15",
+        "time": "22:00:23",
+        "open": 382.72,
+        "high": 394.86,
+        "low": 370.94,
+        "close": 382.45,
+        "volume": 6626953,
+        "priorSnapshotPrice": 125,
+        "refreshDate": "2026-05-16"
+      }
     },
     {
       "symbol": "FLEX",
@@ -943,9 +1753,9 @@
       "bucket": "Systems",
       "layer": "Electronics manufacturing and power systems",
       "region": "Singapore/United States",
-      "price": 53,
-      "priceAsOf": "proxy May 2026",
-      "priceQuality": "proxy",
+      "price": 137.86,
+      "priceAsOf": "2026-05-15 Stooq delayed close",
+      "priceQuality": "stooq_delayed_close",
       "pdfBasket": false,
       "conviction": 65,
       "convexity": 48,
@@ -953,13 +1763,51 @@
       "optionsLiquidity": 45,
       "valuationRisk": 46,
       "volatility": 34,
-      "moic": {"bear": 0.85, "base": 1.25, "bull": 1.8},
-      "impact": {"capex": 1.1, "hbm": 0.0, "asic": 0.4, "ethernet": 0.4, "taiwan": 0.0, "export": -0.2, "election": -0.1, "rates": -0.3, "grid": 0.7, "monetization": -0.6},
+      "moic": {
+        "bear": 0.85,
+        "base": 1.25,
+        "bull": 1.8
+      },
+      "impact": {
+        "capex": 1.1,
+        "hbm": 0,
+        "asic": 0.4,
+        "ethernet": 0.4,
+        "taiwan": 0,
+        "export": -0.2,
+        "election": -0.1,
+        "rates": -0.3,
+        "grid": 0.7,
+        "monetization": -0.6
+      },
       "thesis": "Cheaper, lower-beta systems and power-supply manufacturing exposure.",
       "mustBeTrue": "AI infrastructure manufacturing demand broadens beyond premium suppliers.",
-      "risks": ["Lower margin", "Less pure-play", "Program share shifts"],
-      "catalysts": ["Data-center systems growth", "Power product orders", "Margin mix"],
-      "sources": ["pdf-source"]
+      "risks": [
+        "Lower margin",
+        "Less pure-play",
+        "Program share shifts"
+      ],
+      "catalysts": [
+        "Data-center systems growth",
+        "Power product orders",
+        "Margin mix"
+      ],
+      "sources": [
+        "pdf-source"
+      ],
+      "marketData": {
+        "source": "Stooq delayed daily quote",
+        "sourceUrl": "https://stooq.com/q/l/?s=flex.us&f=sd2t2ohlcv&h&e=csv",
+        "date": "2026-05-15",
+        "time": "22:00:20",
+        "open": 139.29,
+        "high": 141.44,
+        "low": 137.21,
+        "close": 137.86,
+        "volume": 6490319,
+        "priorSnapshotPrice": 53,
+        "refreshDate": "2026-05-16"
+      }
     },
     {
       "symbol": "ETN",
@@ -967,9 +1815,9 @@
       "bucket": "Electrical",
       "layer": "Switchgear, electrical distribution, power management",
       "region": "Ireland/United States",
-      "price": 410,
-      "priceAsOf": "proxy May 2026",
-      "priceQuality": "proxy",
+      "price": 399.44,
+      "priceAsOf": "2026-05-15 Stooq delayed close",
+      "priceQuality": "stooq_delayed_close",
       "pdfBasket": false,
       "conviction": 78,
       "convexity": 45,
@@ -977,13 +1825,52 @@
       "optionsLiquidity": 86,
       "valuationRisk": 62,
       "volatility": 31,
-      "moic": {"bear": 0.9, "base": 1.3, "bull": 1.85},
-      "impact": {"capex": 1.2, "hbm": 0.0, "asic": 0.0, "ethernet": 0.0, "taiwan": 0.5, "export": 0.0, "election": -0.1, "rates": -0.4, "grid": 2.4, "monetization": -0.7},
+      "moic": {
+        "bear": 0.9,
+        "base": 1.3,
+        "bull": 1.85
+      },
+      "impact": {
+        "capex": 1.2,
+        "hbm": 0,
+        "asic": 0,
+        "ethernet": 0,
+        "taiwan": 0.5,
+        "export": 0,
+        "election": -0.1,
+        "rates": -0.4,
+        "grid": 2.4,
+        "monetization": -0.7
+      },
       "thesis": "Large-cap electrical bottleneck exposure for data-center power distribution and grid hardening.",
       "mustBeTrue": "Data-center electrical backlog and grid upgrades remain capacity-constrained.",
-      "risks": ["Industrial cycle", "Valuation", "Broad-market sensitivity"],
-      "catalysts": ["Electrical backlog", "Data-center order mix", "Capacity expansion"],
-      "sources": ["eia-power-demand", "iea-dc-2025"]
+      "risks": [
+        "Industrial cycle",
+        "Valuation",
+        "Broad-market sensitivity"
+      ],
+      "catalysts": [
+        "Electrical backlog",
+        "Data-center order mix",
+        "Capacity expansion"
+      ],
+      "sources": [
+        "eia-power-demand",
+        "iea-dc-2025"
+      ],
+      "marketData": {
+        "source": "Stooq delayed daily quote",
+        "sourceUrl": "https://stooq.com/q/l/?s=etn.us&f=sd2t2ohlcv&h&e=csv",
+        "date": "2026-05-15",
+        "time": "22:00:22",
+        "open": 399.32,
+        "high": 402.12,
+        "low": 395.35,
+        "close": 399.44,
+        "volume": 3253272,
+        "priorSnapshotPrice": 410,
+        "refreshDate": "2026-05-16"
+      }
     },
     {
       "symbol": "PWR",
@@ -991,9 +1878,9 @@
       "bucket": "Grid",
       "layer": "Transmission, grid services, utility infrastructure",
       "region": "United States",
-      "price": 370,
-      "priceAsOf": "proxy May 2026",
-      "priceQuality": "proxy",
+      "price": 769.99,
+      "priceAsOf": "2026-05-15 Stooq delayed close",
+      "priceQuality": "stooq_delayed_close",
       "pdfBasket": false,
       "conviction": 74,
       "convexity": 47,
@@ -1001,13 +1888,52 @@
       "optionsLiquidity": 72,
       "valuationRisk": 57,
       "volatility": 33,
-      "moic": {"bear": 0.9, "base": 1.3, "bull": 1.9},
-      "impact": {"capex": 0.9, "hbm": 0.0, "asic": 0.0, "ethernet": 0.0, "taiwan": 0.7, "export": 0.1, "election": -0.1, "rates": -0.4, "grid": 2.8, "monetization": -0.6},
+      "moic": {
+        "bear": 0.9,
+        "base": 1.3,
+        "bull": 1.9
+      },
+      "impact": {
+        "capex": 0.9,
+        "hbm": 0,
+        "asic": 0,
+        "ethernet": 0,
+        "taiwan": 0.7,
+        "export": 0.1,
+        "election": -0.1,
+        "rates": -0.4,
+        "grid": 2.8,
+        "monetization": -0.6
+      },
       "thesis": "Grid bottleneck hedge if data-center load growth forces transmission/interconnect spending.",
       "mustBeTrue": "Utility and hyperscaler grid buildouts accelerate because power access gates AI capacity.",
-      "risks": ["Permitting", "Labor constraints", "Utility budget timing"],
-      "catalysts": ["Transmission awards", "Data-center interconnect projects", "Utility capex updates"],
-      "sources": ["eia-power-demand", "iea-dc-2025"]
+      "risks": [
+        "Permitting",
+        "Labor constraints",
+        "Utility budget timing"
+      ],
+      "catalysts": [
+        "Transmission awards",
+        "Data-center interconnect projects",
+        "Utility capex updates"
+      ],
+      "sources": [
+        "eia-power-demand",
+        "iea-dc-2025"
+      ],
+      "marketData": {
+        "source": "Stooq delayed daily quote",
+        "sourceUrl": "https://stooq.com/q/l/?s=pwr.us&f=sd2t2ohlcv&h&e=csv",
+        "date": "2026-05-15",
+        "time": "22:00:22",
+        "open": 761.77,
+        "high": 776.5,
+        "low": 746.23,
+        "close": 769.99,
+        "volume": 1012582,
+        "priorSnapshotPrice": 370,
+        "refreshDate": "2026-05-16"
+      }
     },
     {
       "symbol": "CEG",
@@ -1015,9 +1941,9 @@
       "bucket": "Power",
       "layer": "Nuclear generation and clean firm power",
       "region": "United States",
-      "price": 335,
-      "priceAsOf": "proxy May 2026",
-      "priceQuality": "proxy",
+      "price": 267.2,
+      "priceAsOf": "2026-05-15 Stooq delayed close",
+      "priceQuality": "stooq_delayed_close",
       "pdfBasket": false,
       "conviction": 72,
       "convexity": 52,
@@ -1025,13 +1951,52 @@
       "optionsLiquidity": 79,
       "valuationRisk": 64,
       "volatility": 37,
-      "moic": {"bear": 0.85, "base": 1.35, "bull": 2.0},
-      "impact": {"capex": 0.7, "hbm": 0.0, "asic": 0.0, "ethernet": 0.0, "taiwan": 0.8, "export": 0.1, "election": 0.2, "rates": -0.3, "grid": 2.5, "monetization": -0.5},
+      "moic": {
+        "bear": 0.85,
+        "base": 1.35,
+        "bull": 2
+      },
+      "impact": {
+        "capex": 0.7,
+        "hbm": 0,
+        "asic": 0,
+        "ethernet": 0,
+        "taiwan": 0.8,
+        "export": 0.1,
+        "election": 0.2,
+        "rates": -0.3,
+        "grid": 2.5,
+        "monetization": -0.5
+      },
       "thesis": "Power bottleneck exposure if hyperscalers keep signing long-duration clean firm power contracts.",
       "mustBeTrue": "Data-center power demand sustains premium contracting for reliable low-carbon generation.",
-      "risks": ["Regulation", "Power-price normalization", "Contract repricing"],
-      "catalysts": ["Data-center PPAs", "Nuclear uprate/restart headlines", "Capacity market pricing"],
-      "sources": ["eia-power-demand", "iea-dc-2025"]
+      "risks": [
+        "Regulation",
+        "Power-price normalization",
+        "Contract repricing"
+      ],
+      "catalysts": [
+        "Data-center PPAs",
+        "Nuclear uprate/restart headlines",
+        "Capacity market pricing"
+      ],
+      "sources": [
+        "eia-power-demand",
+        "iea-dc-2025"
+      ],
+      "marketData": {
+        "source": "Stooq delayed daily quote",
+        "sourceUrl": "https://stooq.com/q/l/?s=ceg.us&f=sd2t2ohlcv&h&e=csv",
+        "date": "2026-05-15",
+        "time": "22:00:19",
+        "open": 270.65,
+        "high": 273.2,
+        "low": 266.57,
+        "close": 267.2,
+        "volume": 3835685,
+        "priorSnapshotPrice": 335,
+        "refreshDate": "2026-05-16"
+      }
     },
     {
       "symbol": "VST",
@@ -1039,9 +2004,9 @@
       "bucket": "Power",
       "layer": "Power generation and capacity market exposure",
       "region": "United States",
-      "price": 210,
-      "priceAsOf": "proxy May 2026",
-      "priceQuality": "proxy",
+      "price": 139.68,
+      "priceAsOf": "2026-05-15 Stooq delayed close",
+      "priceQuality": "stooq_delayed_close",
       "pdfBasket": false,
       "conviction": 67,
       "convexity": 63,
@@ -1049,13 +2014,52 @@
       "optionsLiquidity": 81,
       "valuationRisk": 73,
       "volatility": 52,
-      "moic": {"bear": 0.7, "base": 1.35, "bull": 2.25},
-      "impact": {"capex": 0.7, "hbm": 0.0, "asic": 0.0, "ethernet": 0.0, "taiwan": 0.7, "export": 0.0, "election": 0.1, "rates": -0.4, "grid": 2.4, "monetization": -0.6},
+      "moic": {
+        "bear": 0.7,
+        "base": 1.35,
+        "bull": 2.25
+      },
+      "impact": {
+        "capex": 0.7,
+        "hbm": 0,
+        "asic": 0,
+        "ethernet": 0,
+        "taiwan": 0.7,
+        "export": 0,
+        "election": 0.1,
+        "rates": -0.4,
+        "grid": 2.4,
+        "monetization": -0.6
+      },
       "thesis": "Higher-beta power-price and capacity-market way to express AI load growth.",
       "mustBeTrue": "Power scarcity keeps repricing generation assets upward.",
-      "risks": ["Commodity/power price reversals", "Policy intervention", "Crowded AI power trade"],
-      "catalysts": ["Capacity auctions", "Data-center offtake", "Power price curves"],
-      "sources": ["eia-power-demand", "iea-dc-2025"]
+      "risks": [
+        "Commodity/power price reversals",
+        "Policy intervention",
+        "Crowded AI power trade"
+      ],
+      "catalysts": [
+        "Capacity auctions",
+        "Data-center offtake",
+        "Power price curves"
+      ],
+      "sources": [
+        "eia-power-demand",
+        "iea-dc-2025"
+      ],
+      "marketData": {
+        "source": "Stooq delayed daily quote",
+        "sourceUrl": "https://stooq.com/q/l/?s=vst.us&f=sd2t2ohlcv&h&e=csv",
+        "date": "2026-05-15",
+        "time": "22:00:23",
+        "open": 139.78,
+        "high": 141.09,
+        "low": 137.81,
+        "close": 139.68,
+        "volume": 6632205,
+        "priorSnapshotPrice": 210,
+        "refreshDate": "2026-05-16"
+      }
     },
     {
       "symbol": "CCJ",
@@ -1063,9 +2067,9 @@
       "bucket": "Uranium",
       "layer": "Nuclear fuel supply",
       "region": "Canada",
-      "price": 85,
-      "priceAsOf": "proxy May 2026",
-      "priceQuality": "proxy",
+      "price": 107.51,
+      "priceAsOf": "2026-05-15 Stooq delayed close",
+      "priceQuality": "stooq_delayed_close",
       "pdfBasket": false,
       "conviction": 61,
       "convexity": 67,
@@ -1073,13 +2077,53 @@
       "optionsLiquidity": 76,
       "valuationRisk": 69,
       "volatility": 50,
-      "moic": {"bear": 0.65, "base": 1.3, "bull": 2.25},
-      "impact": {"capex": 0.4, "hbm": 0.0, "asic": 0.0, "ethernet": 0.0, "taiwan": 0.6, "export": 0.1, "election": 0.3, "rates": -0.3, "grid": 2.0, "monetization": -0.4},
+      "moic": {
+        "bear": 0.65,
+        "base": 1.3,
+        "bull": 2.25
+      },
+      "impact": {
+        "capex": 0.4,
+        "hbm": 0,
+        "asic": 0,
+        "ethernet": 0,
+        "taiwan": 0.6,
+        "export": 0.1,
+        "election": 0.3,
+        "rates": -0.3,
+        "grid": 2,
+        "monetization": -0.4
+      },
       "thesis": "Longer-chain nuclear fuel hedge if AI power demand structurally improves the nuclear buildout story.",
       "mustBeTrue": "AI/data-center load growth supports nuclear life extensions, restarts, SMR momentum, or fuel contracting.",
-      "risks": ["Commodity cycle", "Mine disruptions", "Policy timing", "Long lag from data centers to uranium demand"],
-      "catalysts": ["Utility contracting", "SMR/offtake headlines", "Uranium price strength"],
-      "sources": ["iea-dc-2025", "eia-power-demand"]
+      "risks": [
+        "Commodity cycle",
+        "Mine disruptions",
+        "Policy timing",
+        "Long lag from data centers to uranium demand"
+      ],
+      "catalysts": [
+        "Utility contracting",
+        "SMR/offtake headlines",
+        "Uranium price strength"
+      ],
+      "sources": [
+        "iea-dc-2025",
+        "eia-power-demand"
+      ],
+      "marketData": {
+        "source": "Stooq delayed daily quote",
+        "sourceUrl": "https://stooq.com/q/l/?s=ccj.us&f=sd2t2ohlcv&h&e=csv",
+        "date": "2026-05-15",
+        "time": "22:00:22",
+        "open": 109.56,
+        "high": 110,
+        "low": 107.25,
+        "close": 107.51,
+        "volume": 3080320,
+        "priorSnapshotPrice": 85,
+        "refreshDate": "2026-05-16"
+      }
     },
     {
       "symbol": "AMKR",
@@ -1087,9 +2131,9 @@
       "bucket": "OSAT",
       "layer": "Advanced packaging services",
       "region": "United States/Asia",
-      "price": 41,
-      "priceAsOf": "proxy May 2026",
-      "priceQuality": "proxy",
+      "price": 70.35,
+      "priceAsOf": "2026-05-15 Stooq delayed close",
+      "priceQuality": "stooq_delayed_close",
       "pdfBasket": false,
       "conviction": 66,
       "convexity": 60,
@@ -1097,13 +2141,52 @@
       "optionsLiquidity": 48,
       "valuationRisk": 52,
       "volatility": 42,
-      "moic": {"bear": 0.75, "base": 1.4, "bull": 2.3},
-      "impact": {"capex": 1.5, "hbm": 1.9, "asic": 1.1, "ethernet": 0.1, "taiwan": -0.8, "export": -0.7, "election": -0.1, "rates": -0.5, "grid": 0.0, "monetization": -0.8},
+      "moic": {
+        "bear": 0.75,
+        "base": 1.4,
+        "bull": 2.3
+      },
+      "impact": {
+        "capex": 1.5,
+        "hbm": 1.9,
+        "asic": 1.1,
+        "ethernet": 0.1,
+        "taiwan": -0.8,
+        "export": -0.7,
+        "election": -0.1,
+        "rates": -0.5,
+        "grid": 0,
+        "monetization": -0.8
+      },
       "thesis": "Lower-multiple advanced packaging capacity exposure if OSATs absorb spillover from constrained internal packaging.",
       "mustBeTrue": "AI packaging demand broadens to OSAT partners and margins do not collapse.",
-      "risks": ["Lower margin", "Customer mix", "Asia concentration"],
-      "catalysts": ["Advanced packaging capacity wins", "AI customer mix", "Margin commentary"],
-      "sources": ["tsmc-ar-2025", "camtek-fy-2025"]
+      "risks": [
+        "Lower margin",
+        "Customer mix",
+        "Asia concentration"
+      ],
+      "catalysts": [
+        "Advanced packaging capacity wins",
+        "AI customer mix",
+        "Margin commentary"
+      ],
+      "sources": [
+        "tsmc-ar-2025",
+        "camtek-fy-2025"
+      ],
+      "marketData": {
+        "source": "Stooq delayed daily quote",
+        "sourceUrl": "https://stooq.com/q/l/?s=amkr.us&f=sd2t2ohlcv&h&e=csv",
+        "date": "2026-05-15",
+        "time": "22:00:19",
+        "open": 69.47,
+        "high": 71.77,
+        "low": 68.48,
+        "close": 70.35,
+        "volume": 3138312,
+        "priorSnapshotPrice": 41,
+        "refreshDate": "2026-05-16"
+      }
     },
     {
       "symbol": "TER",
@@ -1111,9 +2194,9 @@
       "bucket": "Test",
       "layer": "Semiconductor automated test equipment",
       "region": "United States",
-      "price": 165,
-      "priceAsOf": "proxy May 2026",
-      "priceQuality": "proxy",
+      "price": 337.88,
+      "priceAsOf": "2026-05-15 Stooq delayed close",
+      "priceQuality": "stooq_delayed_close",
       "pdfBasket": false,
       "conviction": 67,
       "convexity": 54,
@@ -1121,13 +2204,52 @@
       "optionsLiquidity": 72,
       "valuationRisk": 58,
       "volatility": 38,
-      "moic": {"bear": 0.8, "base": 1.35, "bull": 2.0},
-      "impact": {"capex": 1.4, "hbm": 1.2, "asic": 0.9, "ethernet": 0.4, "taiwan": -0.6, "export": -0.7, "election": -0.1, "rates": -0.6, "grid": 0.0, "monetization": -0.8},
+      "moic": {
+        "bear": 0.8,
+        "base": 1.35,
+        "bull": 2
+      },
+      "impact": {
+        "capex": 1.4,
+        "hbm": 1.2,
+        "asic": 0.9,
+        "ethernet": 0.4,
+        "taiwan": -0.6,
+        "export": -0.7,
+        "election": -0.1,
+        "rates": -0.6,
+        "grid": 0,
+        "monetization": -0.8
+      },
       "thesis": "Broader semiconductor test exposure if AI silicon and memory complexity raise test spend.",
       "mustBeTrue": "AI test growth offsets consumer/industrial ATE cyclicality.",
-      "risks": ["Cyclicality", "Less pure HBM", "Robotics distraction"],
-      "catalysts": ["AI test order mix", "Memory ATE demand", "Margin recovery"],
-      "sources": ["form-q1-2026", "tsmc-ar-2025"]
+      "risks": [
+        "Cyclicality",
+        "Less pure HBM",
+        "Robotics distraction"
+      ],
+      "catalysts": [
+        "AI test order mix",
+        "Memory ATE demand",
+        "Margin recovery"
+      ],
+      "sources": [
+        "form-q1-2026",
+        "tsmc-ar-2025"
+      ],
+      "marketData": {
+        "source": "Stooq delayed daily quote",
+        "sourceUrl": "https://stooq.com/q/l/?s=ter.us&f=sd2t2ohlcv&h&e=csv",
+        "date": "2026-05-15",
+        "time": "22:00:19",
+        "open": 339.57,
+        "high": 346.59,
+        "low": 335.32,
+        "close": 337.88,
+        "volume": 4251855,
+        "priorSnapshotPrice": 165,
+        "refreshDate": "2026-05-16"
+      }
     }
   ],
   "socialSignals": [
@@ -1165,11 +2287,76 @@
     }
   ],
   "catalystCalendar": [
-    {"window": "Each quarterly report", "event": "Hyperscaler capex revisions", "impacted": ["NVDA", "AVGO", "TSM", "VRT", "MOD", "CRDO", "ALAB", "CLS"], "trigger": "Raise AI capex slider on upward revisions; lower on ROI/capex digestion language."},
-    {"window": "2026 H2", "event": "HBM4/HBM4E roadmap and qualification updates", "impacted": ["RMBS", "FORM", "ONTO", "CAMT", "BESIY", "MU", "TSM"], "trigger": "Increase HBM shortage duration if suppliers keep indicating sold-out capacity."},
-    {"window": "2026-2027", "event": "Ethernet vs optics/CPO architecture evidence", "impacted": ["CRDO", "ALAB", "ANET", "MRVL", "COHR", "CLS"], "trigger": "Move Ethernet/copper slider up for AEC wins, down for rapid CPO/optics substitution."},
-    {"window": "2026-2028", "event": "Grid interconnection, power contracts, nuclear/SMR offtakes", "impacted": ["VRT", "MOD", "ETN", "PWR", "CEG", "VST", "CCJ"], "trigger": "Increase grid bottleneck slider when power access delays AI data-center projects."},
-    {"window": "Anytime", "event": "Taiwan, China export-control, tariff, or Middle East shock", "impacted": ["TSM", "ASML", "CAMT", "FORM", "ONTO", "NVDA", "AVGO"], "trigger": "Raise geopolitical/export sliders and shift optimizer toward U.S. power/grid and cash."}
+    {
+      "window": "Each quarterly report",
+      "event": "Hyperscaler capex revisions",
+      "impacted": [
+        "NVDA",
+        "AVGO",
+        "TSM",
+        "VRT",
+        "MOD",
+        "CRDO",
+        "ALAB",
+        "CLS"
+      ],
+      "trigger": "Raise AI capex slider on upward revisions; lower on ROI/capex digestion language."
+    },
+    {
+      "window": "2026 H2",
+      "event": "HBM4/HBM4E roadmap and qualification updates",
+      "impacted": [
+        "RMBS",
+        "FORM",
+        "ONTO",
+        "CAMT",
+        "BESIY",
+        "MU",
+        "TSM"
+      ],
+      "trigger": "Increase HBM shortage duration if suppliers keep indicating sold-out capacity."
+    },
+    {
+      "window": "2026-2027",
+      "event": "Ethernet vs optics/CPO architecture evidence",
+      "impacted": [
+        "CRDO",
+        "ALAB",
+        "ANET",
+        "MRVL",
+        "COHR",
+        "CLS"
+      ],
+      "trigger": "Move Ethernet/copper slider up for AEC wins, down for rapid CPO/optics substitution."
+    },
+    {
+      "window": "2026-2028",
+      "event": "Grid interconnection, power contracts, nuclear/SMR offtakes",
+      "impacted": [
+        "VRT",
+        "MOD",
+        "ETN",
+        "PWR",
+        "CEG",
+        "VST",
+        "CCJ"
+      ],
+      "trigger": "Increase grid bottleneck slider when power access delays AI data-center projects."
+    },
+    {
+      "window": "Anytime",
+      "event": "Taiwan, China export-control, tariff, or Middle East shock",
+      "impacted": [
+        "TSM",
+        "ASML",
+        "CAMT",
+        "FORM",
+        "ONTO",
+        "NVDA",
+        "AVGO"
+      ],
+      "trigger": "Raise geopolitical/export sliders and shift optimizer toward U.S. power/grid and cash."
+    }
   ],
   "timelineHorizons": [
     {
@@ -1177,54 +2364,135 @@
       "label": "0DTE / 1-2 day tape",
       "months": 0.07,
       "summary": "Use only for defined-risk event trades based on public tape, abnormal volume, official posts, scheduled macro data, or confirmed breaking news.",
-      "fit": ["SPX", "XSP", "SPY", "QQQ", "SMH", "NVDA", "TSM", "AVGO", "ASML"],
+      "fit": [
+        "SPX",
+        "XSP",
+        "SPY",
+        "QQQ",
+        "SMH",
+        "NVDA",
+        "TSM",
+        "AVGO",
+        "ASML"
+      ],
       "avoid": "Illiquid single-name contracts, microcaps, unverified private leaks, and any MNPI.",
-      "sourceIds": ["cboe-0dte", "finra-0dte", "investor-gov-insider-trading"]
+      "sourceIds": [
+        "cboe-0dte",
+        "finra-0dte",
+        "investor-gov-insider-trading"
+      ]
     },
     {
       "id": "one-four-week",
       "label": "1-4 week catalyst",
       "months": 0.75,
       "summary": "Use for earnings, guidance revisions, export-control decisions, hyperscaler capex prints, and high-conviction volatility dislocations.",
-      "fit": ["NVDA", "AVGO", "TSM", "ASML", "CRDO", "ALAB", "VRT", "MOD"],
+      "fit": [
+        "NVDA",
+        "AVGO",
+        "TSM",
+        "ASML",
+        "CRDO",
+        "ALAB",
+        "VRT",
+        "MOD"
+      ],
       "avoid": "Thesis trades whose catalyst is more than one earnings cycle away.",
-      "sourceIds": ["axios-trump-chip-policy", "axios-chip-tariff", "truth-social-watch"]
+      "sourceIds": [
+        "axios-trump-chip-policy",
+        "axios-chip-tariff",
+        "truth-social-watch"
+      ]
     },
     {
       "id": "one-three-month",
       "label": "1-3 month rerating",
       "months": 2,
       "summary": "Use when market prices are reacting to architecture, capex, policy, or supply-chain data before full-year numbers move.",
-      "fit": ["CRDO", "ALAB", "ANET", "MRVL", "COHR", "RMBS", "FORM", "ONTO"],
+      "fit": [
+        "CRDO",
+        "ALAB",
+        "ANET",
+        "MRVL",
+        "COHR",
+        "RMBS",
+        "FORM",
+        "ONTO"
+      ],
       "avoid": "Far-OTM options that need a multi-year adoption curve to work.",
-      "sourceIds": ["crdo-q3-2026", "alab-q1-2026", "tomshardware-nvidia-china"]
+      "sourceIds": [
+        "crdo-q3-2026",
+        "alab-q1-2026",
+        "tomshardware-nvidia-china"
+      ]
     },
     {
       "id": "six-twelve-month",
       "label": "6-12 month thesis build",
       "months": 9,
       "summary": "Use for names where backlog, design wins, HBM/tool adoption, or power constraints should show up over several quarters.",
-      "fit": ["RMBS", "FORM", "ONTO", "CAMT", "BESIY", "VRT", "MOD", "CLS"],
+      "fit": [
+        "RMBS",
+        "FORM",
+        "ONTO",
+        "CAMT",
+        "BESIY",
+        "VRT",
+        "MOD",
+        "CLS"
+      ],
       "avoid": "0DTE/weekly structures unless there is a separate tape catalyst.",
-      "sourceIds": ["rmbs-q1-2026", "form-q1-2026", "onto-q1-2026", "camtek-fy-2025"]
+      "sourceIds": [
+        "rmbs-q1-2026",
+        "form-q1-2026",
+        "onto-q1-2026",
+        "camtek-fy-2025"
+      ]
     },
     {
       "id": "eighteen-thirtysix-month",
       "label": "18-36 month core moonshot",
       "months": 24,
       "summary": "Default lab horizon for AI bottleneck compounding, HBM4/HBM4E adoption, advanced packaging, networking, cooling, and grid/power scarcity.",
-      "fit": ["RMBS", "FORM", "ONTO", "CAMT", "BESIY", "CRDO", "ALAB", "VRT", "MOD", "PWR"],
+      "fit": [
+        "RMBS",
+        "FORM",
+        "ONTO",
+        "CAMT",
+        "BESIY",
+        "CRDO",
+        "ALAB",
+        "VRT",
+        "MOD",
+        "PWR"
+      ],
       "avoid": "Paying short-dated implied volatility for a long-duration thesis.",
-      "sourceIds": ["pdf-source", "iea-energy-ai", "tsmc-ar-2025"]
+      "sourceIds": [
+        "pdf-source",
+        "iea-energy-ai",
+        "tsmc-ar-2025"
+      ]
     },
     {
       "id": "three-five-year",
       "label": "3-5 year structural",
       "months": 48,
       "summary": "Use for power generation, grid, nuclear/uranium, deep supply-chain reshoring, and speculative micro/small-cap bottleneck discovery.",
-      "fit": ["CEG", "VST", "CCJ", "PWR", "ETN", "AMKR", "TER"],
+      "fit": [
+        "CEG",
+        "VST",
+        "CCJ",
+        "PWR",
+        "ETN",
+        "AMKR",
+        "TER"
+      ],
       "avoid": "Short-dated options except as a separately sized event sleeve.",
-      "sourceIds": ["iea-dc-2025", "eia-power-demand", "datacenterknowledge-capex"]
+      "sourceIds": [
+        "iea-dc-2025",
+        "eia-power-demand",
+        "datacenterknowledge-capex"
+      ]
     }
   ],
   "eventTapeCandidates": [
@@ -1232,31 +2500,81 @@
       "id": "index-ai-beta",
       "label": "Index AI beta shock",
       "duration": "0DTE",
-      "instruments": ["SPX", "XSP", "SPY", "QQQ", "SMH"],
-      "signals": ["Truth Social / White House tariff or China posts", "FOMC or rates shock", "NVDA/mega-cap AI headline", "SOXX/SMH abnormal volume"],
+      "instruments": [
+        "SPX",
+        "XSP",
+        "SPY",
+        "QQQ",
+        "SMH"
+      ],
+      "signals": [
+        "Truth Social / White House tariff or China posts",
+        "H200/Blackwell export-license or Beijing customs tape",
+        "FOMC or rates shock",
+        "NVDA/mega-cap AI headline",
+        "SOXX/SMH abnormal volume"
+      ],
       "structure": "Defined-risk debit spreads or very small premium buys only; no naked short options.",
       "guardrail": "Use public tape only. Do not trade on private earnings leaks or MNPI.",
-      "sources": ["cboe-0dte", "finra-0dte", "investor-gov-insider-trading"]
+      "sources": [
+        "cboe-0dte",
+        "finra-0dte",
+        "investor-gov-insider-trading",
+        "pcgamer-h200-china-cleared",
+        "tomshardware-trump-h200-blocked"
+      ]
     },
     {
       "id": "single-name-semi-event",
       "label": "Single-name semi event",
       "duration": "1-2DTE / weekly",
-      "instruments": ["NVDA", "TSM", "AVGO", "ASML", "CRDO", "ALAB"],
-      "signals": ["Earnings date proximity", "abnormal call/put volume vs open interest", "public customer/design-win report", "export-control decision window"],
+      "instruments": [
+        "NVDA",
+        "TSM",
+        "AVGO",
+        "ASML",
+        "CRDO",
+        "ALAB"
+      ],
+      "signals": [
+        "Earnings date proximity",
+        "abnormal call/put volume vs open interest",
+        "public customer/design-win report",
+        "export-control decision window",
+        "China import approval or blocking signal"
+      ],
       "structure": "Vertical spreads around known catalysts; premium-at-risk sized outside the long-cycle portfolio.",
       "guardrail": "Single names often lack true daily expiries; verify listed expiries, bid/ask, IV, and assignment rules in broker data.",
-      "sources": ["axios-trump-chip-policy", "axios-chip-tariff", "tomshardware-nvidia-china"]
+      "sources": [
+        "axios-trump-chip-policy",
+        "axios-chip-tariff",
+        "tomshardware-nvidia-china",
+        "pcgamer-h200-china-cleared",
+        "tomshardware-trump-h200-blocked"
+      ]
     },
     {
       "id": "microcap-public-rumor",
       "label": "Micro/small-cap public rumor scout",
       "duration": "2DTE-3 months",
-      "instruments": ["user watchlist", "low-float semicap suppliers", "photonics/materials/connectivity microcaps"],
-      "signals": ["Form 4 purchases", "S-3/ATM shelf changes", "public partner PR", "credible public customer-reference trail", "unusual relative volume"],
+      "instruments": [
+        "user watchlist",
+        "low-float semicap suppliers",
+        "photonics/materials/connectivity microcaps"
+      ],
+      "signals": [
+        "Form 4 purchases",
+        "S-3/ATM shelf changes",
+        "public partner PR",
+        "credible public customer-reference trail",
+        "unusual relative volume"
+      ],
       "structure": "Common stock or tiny premium-only calls where listed options are liquid enough; most microcaps should be equity-only.",
       "guardrail": "Treat social chatter as investigation priority, not fact. Avoid illiquid spreads and anything sourced to private nonpublic information.",
-      "sources": ["investor-gov-insider-trading", "user-private-social"]
+      "sources": [
+        "investor-gov-insider-trading",
+        "user-private-social"
+      ]
     }
   ],
   "eventRadar": [
@@ -1267,31 +2585,83 @@
       "headline": "Memory cost and AI capex pressure are the cleanest near-term HBM/test catalyst",
       "whyItMatters": "Recent capex commentary suggests AI infrastructure spending remains huge, while memory cost pressure is a direct transmission mechanism into HBM, test, metrology, and inspection suppliers.",
       "tilt": "Raise HBM shortage and capex sliders; favor RMBS, FORM, ONTO, CAMT, BESIY. For moonshot mode, look for call-spread structures after volatility pullbacks rather than buying every spike.",
-      "beneficiaries": ["RMBS", "FORM", "ONTO", "CAMT", "BESIY"],
-      "atRisk": ["NVDA", "ALAB", "CRDO"],
-      "sources": ["tomshardware-capex-memory", "spglobal-hyperscaler-capex", "form-q1-2026", "onto-q1-2026"]
+      "beneficiaries": [
+        "RMBS",
+        "FORM",
+        "ONTO",
+        "CAMT",
+        "BESIY"
+      ],
+      "atRisk": [
+        "NVDA",
+        "ALAB",
+        "CRDO"
+      ],
+      "sources": [
+        "tomshardware-capex-memory",
+        "spglobal-hyperscaler-capex",
+        "form-q1-2026",
+        "onto-q1-2026"
+      ]
     },
     {
       "id": "grid-power-gating",
-      "urgency": "medium",
+      "urgency": "high",
       "timeframe": "0-12 months",
-      "headline": "Grid and power scarcity can both delay AI projects and create separate winners",
-      "whyItMatters": "Data-center growth is increasingly constrained by power availability. This can hurt near-term compute deployment while increasing the value of electrical, cooling, grid, and power generation exposures.",
-      "tilt": "Raise grid bottleneck slider; favor VRT, MOD, ETN, PWR, CEG, VST. Hedge semis if power-access headlines imply project slips rather than just more infrastructure spend.",
-      "beneficiaries": ["VRT", "MOD", "ETN", "PWR", "CEG", "VST"],
-      "atRisk": ["NVDA", "CRDO", "ALAB", "TSM"],
-      "sources": ["iea-dc-2025", "eia-power-demand", "datacenterknowledge-capex"]
+      "headline": "Grid and power scarcity is becoming the gating constraint for AI deployment",
+      "whyItMatters": "Fresh public reports of local power redirection and stalled data-center projects reinforce that announced AI capex can be bottlenecked by interconnection, permitting, power availability, and cooling capacity.",
+      "tilt": "Raise the grid bottleneck slider; favor VRT, MOD, ETN, PWR, CEG, and VST when the tape is about infrastructure scarcity. Hedge semis when the same news implies delayed GPU deployment rather than incremental power-equipment spend.",
+      "beneficiaries": [
+        "VRT",
+        "MOD",
+        "ETN",
+        "PWR",
+        "CEG",
+        "VST"
+      ],
+      "atRisk": [
+        "NVDA",
+        "CRDO",
+        "ALAB",
+        "TSM"
+      ],
+      "sources": [
+        "iea-dc-2025",
+        "eia-power-demand",
+        "datacenterknowledge-capex",
+        "iea-grids-2026",
+        "tomshardware-lake-tahoe-grid"
+      ]
     },
     {
       "id": "export-control-tape",
       "urgency": "high",
       "timeframe": "intraday-30 days",
-      "headline": "AI chip export-control and tariff rhetoric is now a short-duration options catalyst",
-      "whyItMatters": "White House policy posture, tariff remarks, and AI chip export actions can immediately reprice NVDA, TSM, AVGO, MRVL, ASML, and China-sensitive parts of the stack.",
-      "tilt": "Use event-driven options only with defined premium at risk. Raise export and geopolitical sliders on adverse tape; lower direct China/GPU exposure and consider ASIC, U.S. power/grid, or cash rotation.",
-      "beneficiaries": ["AVGO", "MRVL", "ETN", "PWR", "CEG"],
-      "atRisk": ["NVDA", "TSM", "ASML", "CAMT", "FORM"],
-      "sources": ["axios-trump-chip-policy", "axios-chip-tariff", "tomshardware-nvidia-china", "truth-social-watch"]
+      "headline": "H200 China clearance is still a policy-tape trade, not a solved demand unlock",
+      "whyItMatters": "The market can reprice NVDA and China-sensitive semis on U.S. approvals, Trump remarks, and Beijing response, but the latest public tape still separates license approval from actual deliveries.",
+      "tilt": "For short-duration trades, treat H200/China headlines as volatility catalysts. Positive U.S.-approval tape can favor NVDA and semis intraday, while Beijing-blocking or tariff escalation favors lower-China-exposure infrastructure, U.S. power/grid, and cash rotation.",
+      "beneficiaries": [
+        "AVGO",
+        "MRVL",
+        "ETN",
+        "PWR",
+        "CEG"
+      ],
+      "atRisk": [
+        "NVDA",
+        "TSM",
+        "ASML",
+        "CAMT",
+        "FORM"
+      ],
+      "sources": [
+        "axios-trump-chip-policy",
+        "axios-chip-tariff",
+        "tomshardware-nvidia-china",
+        "truth-social-watch",
+        "pcgamer-h200-china-cleared",
+        "tomshardware-trump-h200-blocked"
+      ]
     },
     {
       "id": "ethernet-optics-architecture",
@@ -1300,9 +2670,23 @@
       "headline": "Ethernet/copper vs optics/CPO is the key fork for CRDO, ALAB, ANET, MRVL, COHR, and CLS",
       "whyItMatters": "A single architecture assumption can flip the trade stack. Copper/AEC strength favors CRDO and ANET; faster optics/CPO adoption shifts upside toward MRVL, COHR, and CLS.",
       "tilt": "Use the Ethernet/copper slider as a topology dial. In moonshot mode, pair long CRDO/ALAB convexity with smaller optics/CPO hedges instead of making one topology an all-or-nothing bet.",
-      "beneficiaries": ["CRDO", "ALAB", "ANET", "MRVL", "COHR", "CLS"],
-      "atRisk": ["CRDO", "ALAB"],
-      "sources": ["crdo-q3-2026", "alab-q1-2026", "cls-q1-2026"]
+      "beneficiaries": [
+        "CRDO",
+        "ALAB",
+        "ANET",
+        "MRVL",
+        "COHR",
+        "CLS"
+      ],
+      "atRisk": [
+        "CRDO",
+        "ALAB"
+      ],
+      "sources": [
+        "crdo-q3-2026",
+        "alab-q1-2026",
+        "cls-q1-2026"
+      ]
     }
   ],
   "tradeArchetypes": [
@@ -1311,7 +2695,14 @@
       "label": "100x-1000x tail",
       "useWhen": "Only for premium you can lose completely and only when a catalyst can re-rate the company or option delta quickly.",
       "structure": "Small OTM call ladders or call spreads across 3-5 bottleneck names; roll after catalyst validation rather than averaging down blindly.",
-      "bestFit": ["RMBS", "CAMT", "CRDO", "ALAB", "COHR", "MRVL"],
+      "bestFit": [
+        "RMBS",
+        "CAMT",
+        "CRDO",
+        "ALAB",
+        "COHR",
+        "MRVL"
+      ],
       "failureMode": "Most contracts expire worthless; sizing discipline is the edge."
     },
     {
@@ -1319,7 +2710,15 @@
       "label": "10x-50x asymmetric",
       "useWhen": "For investors willing to take major drawdown but who need multiple ways to survive a timing miss.",
       "structure": "Common stock core plus LEAPS/call spreads on the same thesis, with cash reserved for post-earnings volatility dislocations.",
-      "bestFit": ["RMBS", "FORM", "ONTO", "CAMT", "CRDO", "MOD", "VRT"],
+      "bestFit": [
+        "RMBS",
+        "FORM",
+        "ONTO",
+        "CAMT",
+        "CRDO",
+        "MOD",
+        "VRT"
+      ],
       "failureMode": "Correct thesis, wrong timing; use longer duration and avoid all premium expiring before 2027 catalysts."
     },
     {
@@ -1327,7 +2726,14 @@
       "label": "Short-duration event tape",
       "useWhen": "For Trump/Truth Social, tariff, export-control, Taiwan, earnings, or hyperscaler capex headlines where the market reaction matters more than the long-cycle thesis.",
       "structure": "Defined-risk weekly/monthly options, vertical spreads, or small hedges sized as a separate event sleeve.",
-      "bestFit": ["NVDA", "TSM", "AVGO", "ASML", "CRDO", "VRT"],
+      "bestFit": [
+        "NVDA",
+        "TSM",
+        "AVGO",
+        "ASML",
+        "CRDO",
+        "VRT"
+      ],
       "failureMode": "Headline is real but market fades it; never size event trades like long-cycle conviction."
     },
     {
@@ -1335,7 +2741,15 @@
       "label": "Survivable AI core",
       "useWhen": "For friends who want AI boom exposure but do not want to lose all invested capital.",
       "structure": "Mostly common stock in higher-liquidity bottleneck names, small LEAPS sleeve, explicit cash reserve.",
-      "bestFit": ["VRT", "ETN", "PWR", "TSM", "AVGO", "ASML", "RMBS"],
+      "bestFit": [
+        "VRT",
+        "ETN",
+        "PWR",
+        "TSM",
+        "AVGO",
+        "ASML",
+        "RMBS"
+      ],
       "failureMode": "Lower maximum upside; avoids the very payoff distribution Matt is willing to underwrite."
     }
   ],
@@ -1347,8 +2761,20 @@
     "Do not let source quality drift: social sentiment may trigger investigation, not allocation by itself."
   ],
   "importLanes": [
-    {"label": "Broker option-chain CSV", "status": "planned", "purpose": "Replace Black-Scholes-style option proxy with executable bid/ask, IV, open interest, and expiry data."},
-    {"label": "X/Facebook/Discord/chatroom export", "status": "planned", "purpose": "Add private/community sentiment without scraping restricted surfaces."},
-    {"label": "Earnings transcript pack", "status": "planned", "purpose": "Update catalyst language and management evidence after each reporting cycle."}
+    {
+      "label": "Broker option-chain CSV",
+      "status": "planned",
+      "purpose": "Replace Black-Scholes-style option proxy with executable bid/ask, IV, open interest, and expiry data."
+    },
+    {
+      "label": "X/Facebook/Discord/chatroom export",
+      "status": "planned",
+      "purpose": "Add private/community sentiment without scraping restricted surfaces."
+    },
+    {
+      "label": "Earnings transcript pack",
+      "status": "planned",
+      "purpose": "Update catalyst language and management evidence after each reporting cycle."
+    }
   ]
 }
